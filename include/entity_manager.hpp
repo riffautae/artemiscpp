@@ -1,14 +1,15 @@
 #ifndef ARTEMIS_ENTITY_MANAGER_H
 #define ARTEMIS_ENTITY_MANAGER_H
 
+#include <map>
+#include <list>
+
 #include "util/typedefs.hpp"
-#include "util/immutable_bag.hpp"
-#include "util/bag.hpp"
 
-#include "component.hpp"
-#include "entity.hpp"
-#include "world.hpp"
 
+class Component;
+class Entity;
+class World;
 
 class EntityManager
 {
@@ -17,16 +18,16 @@ class EntityManager
         ~EntityManager();
 
         bool isActive(EntityId entity_id);
-        int get_entity_count();
+        long get_entity_count();
         long get_total_created();
         long get_total_removed();
     protected:
         Entity* create();
-        void addComponent(Entity* e, ComponentId id);
-        void getComponent(Entity* e, ComponentId id);
-        void removeComponent(Entity* e, ComponentId id);
+        void addComponent(Entity* e, ComponentId comp_id);
+        void getComponent(Entity* e, ComponentId comp_id);
+        void removeComponent(Entity* e, ComponentId comp_id);
 
-        ImmutableBag<Component*>* getComponents(Entity* e);
+        std::list<Component*> getComponents(Entity* e);
         
         Entity* getEntity(EntityId entity_id);
 
@@ -34,15 +35,16 @@ class EntityManager
         void refresh(Entity* e);
     private:
         World* world_;
-        Bag<Entity*> active_entities_;
-        Bag<Entity*> removed_and_available_;
+        std::map<EntityId, Entity*> active_entities_;
+        std::list<Entity*> removed_and_available_;
         int next_available_id_;
         int count_;
         long unique_entity_id_;
         long total_created_;
         long total_removed_;
-        Bag<Bag<Component*>*> components_by_id_;
-        Bag<Component*> entity_components_;
+        typedef std::map<EntityId, Component*> MapEntIdComp;
+        typedef std::map<ComponentId, MapEntIdComp*> MapCompIdMap;
+        MapCompIdMap components_by_id_;
 
         void removeComponentsOfEntity(Entity* entity);
 };

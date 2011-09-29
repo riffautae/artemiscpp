@@ -7,10 +7,10 @@ World::World()
     system_manager_ = SystemManager(this);
     tag_manager_ = TagManager(this);
 
-    refreshed = Bag<Entity*>();
-    deleted = Bag<Entity*>();
+    refreshed = std::set<Entity*>();
+    deleted = std::set<Entity*>();
 
-    managers = hash_map<ManagerId, Manager*>();
+    managers = std::tr1::unordered_map<ManagerId, Manager*>();
 }
 
 EntityManager* World::get_entity_manager()
@@ -41,7 +41,7 @@ void World::setManager(Manager* manager)
 template<Manager T>
 T* World::getManager(ManagerId manager)
 {
-    hash_map::iterator<ManagerId, Manager*> i =
+    std::tr1::unordered_map::iterator<ManagerId, Manager*> i =
         managers_.find(manager);
     if( i != managers_.end() )
     {
@@ -65,10 +65,15 @@ void World::set_delta(int delta)
 
 void World::deleteEntity(Entity* e)
 {
-    if( !deleted.contains(e) )
+    if( deleted.find(e) != deleted.end() )
     {
-        deleted.add(e);
+        deleted.insert(e);
     }
+}
+
+void World::refreshEntity(Entity* e)
+{
+    refreshed_.insert(e);
 }
 
 Entity* World::createEntity()
@@ -83,20 +88,19 @@ Entity* World::getEntity(EntityId entityId)
 
 void World::loopStart()
 {
-    if( !refreshed.isEmpty() )
+    if( !refreshed.empty() )
     {
-        BOOST_FOREACH(Entity* e, refreshed)
+        BOOST_FOREACH(Entity* e, refreshed_)
         {
             entity_manager_.refresh(e);
         }
         refreshed.clear()
     }
     
-    if( !deleted.isEmpty() )
+    if( !deleted.empty() )
     {
-        for(int i = 0; deleted.size() > i; i++)
+        BOOST_FOREACH(Entity* e, deleted_)
         {
-            Entity e* = deleted.get(i);
             entity_manager_.remove(e);
             group_manager_.remove(e);
             tag_mananger_.remove(e);

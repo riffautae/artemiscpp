@@ -8,28 +8,28 @@ class Bag : public ImmutableBag<E>
 {
     public:
         Bag();
-        Bag(int capacity);
+        Bag(long capacity);
         ~Bag();
-        E remove(int index);
-        E remove_last();
+        E remove(long index);
+        E removeLast();
         bool remove(E o);
         bool contains(E o);
-        bool remove_all(Bag<E> bag);
-        E& operator[](int index);
-        int get_size();
-        int get_capacity();
+        bool removeAll(Bag<E> bag);
+        E& operator[](long index);
+        long get_size();
+        long get_capacity();
         bool empty();
         void insert(E o);
-        void insert_all(Bag<E> items);
+        void insertAll(Bag<E> items);
         void clear();
 
     private:
         E (*data_)[];
-        int size_;
-        int alloc_;
+        long size_;
+        long alloc_;
 
         void grow();
-        void grow(int new_capacity);
+        void grow(long new_capacity);
 
 
 };

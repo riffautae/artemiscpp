@@ -24,7 +24,6 @@ set(SRCS
     system_manager.cpp
     tag_manager.cpp
     world.cpp
-    util/bag.cpp
     util/timer.cpp
 )
 

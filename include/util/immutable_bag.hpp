@@ -6,7 +6,7 @@ class ImmutableBag
 {
     public:
         virtual E get(int index);
-        virtual int get_size();
+        virtual long get_size();
         virtual bool empty();
 };
 

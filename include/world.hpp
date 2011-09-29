@@ -1,28 +1,28 @@
 #ifndef ARTEMIS_WORLD_H
 #define ARTEMIS_WORLD_H
 
+#include <set>
 #include <tr1/unordered_map>
-
-#include "manager.hpp" 
 
 template<class E> class Bag;
 class Entity;
 class EntityManager;
 class GroupManager;
+class Manager;
 class SystemManager;
 class TagManager;
 
 class World
 {
     private:
-        EntityManager* entity_manager_;
-        GroupManager* group_manager_;
-        SystemManager* system_manager_;
-        TagManager* tag_manager_;
+        EntityManager entity_manager_;
+        GroupManager group_manager_;
+        SystemManager system_manager_;
+        TagManager tag_manager_;
 
-        int delta;
-        Bag<Entity*> refreshed_;
-        Bag<Entity*> deleted_;
+        long delta;
+        std::set<Entity*> refreshed_;
+        std::set<Entity*> deleted_;
 
         std::tr1::unordered_map<ManagerId, Manager*> managers_;
 

@@ -8,12 +8,10 @@ EntityManager::EntityManager(World* world)
 {
     world_ = world;
 
-    active_entities_ = Bag<Entity*>();
-    removed_and_available_ = Bag<Entity*>();
+    active_entities_ = std::map<EntityId, Entity*>();
+    removed_and_available_ = std::list<Entity*>();
 
-    components_by_id_ = Bag<Bag<Component*>*>();
-
-    entity_components_ = Bag<Component*>();
+    components_by_id_ = MapCompIdMap();
 }
 
 EntityManager::~EntityManager()
@@ -24,9 +22,9 @@ EntityManager::~EntityManager()
     delete entity_components_; */
 }
 
-bool EntityManager::is_active(EntityId entity_id)
+bool EntityManager::isActive(EntityId entity_id)
 {
-    return active_entities_.get(entity_id) != NULL;
+    return active_entities_.find(entity_id) != active_entities_.end();
 }
 
 int EntityManager::get_entity_count()
@@ -46,54 +44,55 @@ long EntityManager::get_total_removed()
 
 Entity* EntityManager::create()
 {
-    Entity* e = removed_and_available.removeLast();
-    if( e == NULL )
+    Entity* e;
+    if( !removed_and_available_.empty() )
     {
-        e = new Entity(world, next_available_id++);
+        e = new Entity(world_, next_available_id_++);
     }
     else
     {
-        e.reset();
+        e = removed_and_available_.back();
+        removed_and_available_.pop_back();
+        e->reset();
     }
-    e.set_unique_id(unique_entity_id_++);
-    active_entities_.set(e.get_id(), e);
+    e->set_unique_id(unique_entity_id_++);
+    active_entities_[e->get_id()] = e;
     count_++;
     total_created_++;
     return e;
 }
 
-void EntityManager::addComponent(Entity* e, ComponentId id)
+void EntityManager::addComponent(Entity* e, ComponentId comp_id)
 {
-    if( type.get_id() >= components_by_id_->getCapacity() )
+    MapCompIdMap::iterator compi = components_by_id_.find(comp_id);
+    MapEntIdComp* components;
+
+    if( compi == components_by_id_.end() )
     {
-        components_by_id_->set(id, NULL);
+        components = new MapEntIdComp();
+        components_by_id_[comp_id] = components;
     }
 
-    Bag<Component*>* components = components_by_id_->get(id);
-    if( components == NULL )
-    {
-        components = new Bag<Components*>();
-        components_by_id_->set(id, components);
-    }
+    components[e->get_id()] = component;
 
-    components->set(e->get_id(), component);
-
-    e.addTypeBit(id);
+    e->addCompId(comp_id);
 }
 
-Component* EntityManager::getComponent(Entity* e, ComponentId id)
+Component* EntityManager::getComponent(Entity* e, ComponentId comp_id)
 {
-    Bag<Component*>* bag = components_by_id_->get(id);
-    if( bag != NULL && e->get_id() < bag->get_capacity() )
+    MapCompIdMap::iterator compi = components_by_id_.find(comp_id);
+    MapEntIdComp* components;
+
+    if( compi != components_by_id_.end() )
     {
-        return bag->get(e->getId());
+        return compi;
     }
     return NULL;
 }
 
 Entity* EntityManager::getEntity(EntityId entity_id) 
 {
-    return active_entities_->get(entity_id);
+    return active_entities_.find(entity_id);
 }
 
 int EntityManager::getEntityCount()
@@ -111,20 +110,18 @@ long EntityManager::getTotalRemoved()
    return total_removed_;
 }
 
-ImmutableBag<Component*>* EntityManager::getComponents(Entity* e)
+std::list<Component*> EntityManager::getComponents(Entity* e)
 {
-    entity_components_->clear();
-    for( int a = 0; components_by_type_.size() > a; a++ )
+    std::list<Component*> entity_components();
+    MapCompIdMap::iterator component;
+    BOOST_FOREACH(MapCompIdMap components, components_by_id_)
     {
-        Bag<Component*>* components = components_by_type_.get(a);
-        if( components != NULL && e.getId() < components->size() )
+        component = components.find(e->get_id());
+        if( component != components.end() )
         {
-            Component* component = components->get(e.getId());
-            if( component != NULL)
-            {
-                entity_components_->add(component);
-            }
+            entity_components_.push_back(component);
         }
     }
     return entity_components_;
+}
         

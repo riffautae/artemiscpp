@@ -4,37 +4,32 @@
 #include <string>
 
 #include "entity_manager.hpp"
-#include "world.hpp"
-#include "util/immutable_bag.hpp"
 #include "util/typedefs.hpp"
 
 class Component;
+class World;
+
+template <class E> class ImmutableBag;
 
 class Entity
 {
+friend class EntityManager;
     // getters/setters
     public:
-        int get_id();
-        long get_unique_id();
+        EntityId get_id();
+        EntityId get_unique_id();
         bool is_active();
     protected:
-        void set_unique_id(long unique_id);
-        long get_system_bits();
+        void set_unique_id(EntityId unique_id);
+        EntityId get_system_bits();
         void set_system_bits(long system_bits);
-        long get_type_bits();
-        void set_type_bits(long type_bits);
+        ComponentBits get_comp_bits();
+        void set_comp_bits(ComponentBits comp_bits);
 
     // other
     public:
-        void addComponent(Component* component);
-        void addComponent(ComponentId id);
-        void removeComponent(Component* component);
-        void removeComponent(ComponentId id);
-        Component* getComponent(ComponentId id);
-        ImmutableBag<Component*>* getComponents();
-
         void setGroup(GroupId group);
-        void setTag(std::string tag);
+        void setTag(TagId tag);
 
         std::string toString();
 
@@ -42,13 +37,20 @@ class Entity
         void remove();
         void reset();
     protected:
-        Entity(World* world, int id);
-        void addSystemId(SystemId bit);
-        void removeSystemId(long bit);
+        Entity(World* world, EntityId id);
+        void addSystemId(SystemId Id);
+        void removeSystemId(SystemId Id);
         void addCompId(ComponentId id);
         void removeCompId(ComponentId id);
+
+        void addComponent(Component* component);
+        void addComponent(ComponentId id);
+        void removeComponent(Component* component);
+        void removeComponent(ComponentId id);
+        Component* getComponent(ComponentId id);
+        ImmutableBag<Component*>* getComponents();
     private:
-        int id_;
+        EntityId id_;
         EntityId unique_id_;
         ComponentBits comp_bits_;
         SystemBits system_bits_;
