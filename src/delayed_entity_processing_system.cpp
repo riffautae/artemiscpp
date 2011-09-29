@@ -1,15 +1,13 @@
 #include "delayed_entity_processing_system.hpp"
 
-DelayedEntityProcessingSystem::DelayedEntityProcessingSystem(ComponentType requiredType, ComponentType... otherTypes)
+DelayedEntityProcessingSystem::DelayedEntityProcessingSystem(ComponentId compIds[]) : DelayedEntitySystem(compIds)
 {
-    DelayedEntitySystem::getMergedTypes(requiredType, otherTypes);
 }
 
-void
-processEntities(ImmutableBag<Entity*> entities, int accumulatedDelta)
+void DelayedEntityProcessingSystem::processEntities(ImmutableBag<Entity*> entities, int accumulatedDelta)
 {
-    for (int i = 0, s = entities.size(); s > i; i++)
+    for (int i = 0, s = entities.get_size(); s > i; i++)
     {
-        process(entities.get(i), acumulatedDelta);
+        process(entities.get(i), accumulatedDelta);
     }
 }

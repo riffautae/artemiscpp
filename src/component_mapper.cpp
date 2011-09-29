@@ -1,17 +1,16 @@
-#include <typeinfo>
-
 #include "component_mapper.hpp"
-#include "component_type_manager.hpp"
+
+#include "world.hpp"
 
 template <class T>
-ComponentMapper::ComponentMapper(World const &world)
+ComponentMapper<T>::ComponentMapper(ComponentId id, World* world)
 {
-    this->em = world.getEntityManager();
-    this->type = ComponentTypeManager::getTypeFor(typeid(T));
+    this->id_ = id;
+    this->em_ = world->get_entity_manager();
 }
 
 template <class T>
-T ComponentMapper::get(Entity* e)
+T* ComponentMapper<T>::get(Entity* e)
 {
-    return dynamic_cast<T>(em_->getComponent(e, this->type_));
+    return dynamic_cast<T*>(em_->getComponent(e, id_));
 }

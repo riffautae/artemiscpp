@@ -1,114 +1,97 @@
+#include "entity.hpp"
+
+#include "entity_manager.hpp"
+#include "group_manager.hpp"
+#include "tag_manager.hpp"
+#include "world.hpp"
+
 #include <sstream>
 
-#include "entity.h"
-
-Entity::Entity(World world, int id)
+Entity::Entity(World* world, EntityId id)
 {
     this->world_ = world;
-    this->entity_manager_ = world.get_entity_manager();
+    this->entity_manager_ = world_->get_entity_manager();
     this->id_ = id;
 }
 
 bool Entity::is_active()
 {
-    return entity_manager.isActive(id_);
+    return entity_manager_->isActive(id_);
+}
 
-int Entity::get_id()
+EntityId Entity::get_id()
 {
     return id_;
 }
 
-long Entity::get_unique_id()
+EntityId Entity::get_unique_id()
 {
     return unique_id_;
 }
 
-void Entity::set_unique_id(long unique_id)
+void Entity::set_unique_id(EntityId unique_id)
 {
     this->unique_id_ = unique_id;
 }
 
-long Entity::get_system_bits()
+SystemBits Entity::get_system_bits()
 {
     return system_bits_;
 }
 
-void Entity::set_system_bits(long system_bits)
+void Entity::set_system_bits(SystemBits system_bits)
 {
     this->system_bits_ = system_bits;
-
-long Entity::get_type_bits()
-{
-    return type_bits_;
 }
 
-void Entity::set_type_bits(long type_bits)
+ComponentBits Entity::get_comp_bits()
 {
-    this->type_bits_ = type_bits;
+    return comp_bits_;
+}
+
+void Entity::set_comp_bits(ComponentBits comp_bits)
+{
+    this->comp_bits_ = comp_bits;
 }
 
 
 ///////// other
 
-void Entity::addComponent(Component* component)
+void Entity::addComponent(ComponentId id)
 {
-    entity_manager_.addComponent(*this, component);
+    entity_manager_->addComponent(this, id);
 }
 
-void Entity::addComponent(ComponentName name)
+void Entity::removeComponent(ComponentId id)
 {
-    entity_manager_.addComponent(*this, name);
-
-void Entity::removeComponent(Component* component)
-{
-    entity_manager_.removeComponent(*this, component);
+    entity_manager_->removeComponent(this, id);
 }
 
-void Entity::removeComponent(ComponentType* type)
+Component* Entity::getComponent(ComponentId id)
 {
-    entity_manager_.removeComponent(*this, type);
+    return entity_manager_->getComponent(this, id);
 }
 
-void Entity::removeComponent(ComponentName name)
+ImmutableBag<Component*>* Entity::getComponents()
 {
-    entity_manager_.removeComponent(*this, name);
+    return entity_manager_->getComponents(this);
 }
 
-Component Entity::getComponent(ComponentType* type)
+void Entity::setGroup(GroupId group)
 {
-    return entity_manager_.getComponent(*this, type);
+    world_->get_group_manager()->set(group, this);
 }
 
-Component Entity::getComponent(ComponentName name)
+void Entity::setTag(TagId tag)
 {
-    return entity_manager_.getComponent(*this, name);
+    world_->get_tag_manager()->set(tag, this);
 }
-
-ImmutableBag<Component C> Entity::getComponents()
-{
-    return entity_manager_.getComponents(*this);
-}
-
-void Entity::setGroup(std::string group)
-{
-    world_.get_group_manager().set(group, this);
-}
-
-void Entity::setTag(std::string tag)
-{
-    world_.get_group_manager().set(tag, this);
-}
-
-void Entity::setTag(std::string tag)
-{
-    world_.get_tag_manager().register(tag, this);
-    world_.get_tag_manager().register(tag, this);
 
 std::string Entity::toString()
 {
     std::stringstream build;
     build << "Entity[";
-    build << id;
+    build << id_;
     build << "]";
     std::string ret;
     build >> ret;
@@ -117,37 +100,37 @@ std::string Entity::toString()
 
 void Entity::refresh()
 {
-    world_.refreshEntity(this);
+    world_->refreshEntity(this);
 }
 
 void Entity::remove()
 {
-    world_.deleteEntity(this);
+    world_->deleteEntity(this);
 }
 
 void Entity::reset()
 {
     system_bits_ = 0;
-    type_bits_ = 0;
+    comp_bits_ = 0;
 } 
 
-void Entity::addSystemBit(long bit)
+void Entity::addSystemId(SystemId id)
 {
-    system_bits_ |= bit;
+    system_bits_ |= id;
 }
 
-void Entity::removeSystemBit(long bit)
+void Entity::removeSystemId(SystemId id)
 {
-    system_bits_ &= ~bit;
+    system_bits_ &= ~id;
 }
 
-void Entity::addTypeBit(long bit)
+void Entity::addCompId(ComponentId id)
 {
-    type_bits_ |= bit;
+    comp_bits_ |= id;
 }
 
-void Entity::removeTypeBit(long bit)
+void Entity::removeCompId(ComponentId id)
 {
-    type_bits_ &= ~bit;
+    comp_bits_ &= ~id;
 }
 

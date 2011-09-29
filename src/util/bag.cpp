@@ -10,21 +10,22 @@ Bag::Bag()
 template <E>
 Bag::Bag(int capacity)
 {
-    data = new E[capacity];
+    data_ = new E[capacity]();
+    alloc_ = capacity;
 }
 
 template <E>
 Bag::Bag()
 {
-    delete[] data;
+    //delete[] data_;
 }
 
 template <E>
 E Bag::remove(int index)
 {
-    E o = data[index];
-    data[index] = data[--size];
-    data[size] = null;
+    E o = data_[index];
+    data_[index] = data_[--size_];
+    alloc_--;
     return (E)o;
 }
 
@@ -35,8 +36,8 @@ Bag::remove_last()
 {
     if( size > 0 )
     {
-        E o = data[--size];
-        data[size] = null;
+        E o = data_[--size_];
+        alloc_--;
         return (E) o;
     }
 
@@ -47,16 +48,14 @@ template <E>
 bool
 Bag::remove(E o)
 {
-    for( int i=0; i<size; i++)
+    for( int i=0; i<size_; i++)
     {
-        E o1 = data[i];
+        E o1 = data_[i];
 
         if( o == o1 )
         {
-            data[i] = data[--size];
-
-            data[size] = null;
-
+            data_[i] = data_[--size_];
+            alloc_--;
             return true;
         }
     }
@@ -68,9 +67,9 @@ template <E>
 bool
 Bag::contains(E o)
 {
-    for( int i=0; size > i; i++)
+    for( int i=0; size_ > i; i++)
     {
-        if( o == data[i])
+        if( o == data_[i])
         {
             return true;
         }
@@ -85,13 +84,13 @@ Bag::remove_all(Bag<E> bag)
 {
     bool modified = false;
 
-    for( int i = 0; i < bag.size(); i++ )
+    for( int i = 0; i < bag.get_size(); i++ )
     {
         E o1 = bag[i];
 
-        for( int j=0; j< size; j++)
+        for( int j=0; j< size_; j++)
         {
-            E o2 = data[j];
+            E o2 = data_[j];
 
             if( o1 == o2 )
             {
@@ -109,76 +108,62 @@ Bag::remove_all(Bag<E> bag)
 template<E>
 E& Bag::operator[](int index)
 {
-    return (E) data[index];
+    return (E) data_[index];
 }
 
 template<E>
-int Bag::size()
+int Bag::get_size()
 {
-    return size;
+    return size_;
 }
 
 template<E>
 int
 Bag::capacity()
 {
-    return data.length;
+    return alloc_;
 }
 
 template<E>
 bool
 Bag::empty()
 {
-    return size == 0;
+    return size_ == 0;
 }
 
 template<E>
 void Bag::insert(E o) const
 {
-    if( size == data.length)
+    if( size_ == alloc_)
     {
         grow();
     }
 
-    data[size++] = o;
+    data_[size_++] = o;
     
 }
 
 template<E>
-E& Bag::operator[](int index, const E& o)
+int Bag::grow()
 {
-    if( index >= data.length )
-    {
-        grow(index*2);
-        size = index + 1;
-    }
-    else if( index >= size )
-    {
-        size = index+1;
-    }
-    data[index] = o;
-    return o;
-}
-
-template<E>
-void Bag::grow()
-{
-    int new_capacity = (data.length * 3) / 2 + 1;
+    int new_capacity = (data_.length * 3) / 2 + 1;
     grow(new_capacity);
 }
 
 template<E>
-void Bag::grow(int new_capacity)
+int Bag::grow(int new_capacity)
 {
-    E[] old_data = data;
+    E (*old_data)[] = data_;
     data = new E[new_capacity];
 
-    for( int i=0; i<old_data.size; i++ )
+    for( int i=0; i<size_; i++ )
     {
-        data[i] = old_data[i];
+        data_[i] = old_data[i];
     }
 
     delete[] old_data;
+    
+    alloc_ = new_capacity;
 }
 
 ////////////////////
@@ -186,18 +171,18 @@ void Bag::grow(int new_capacity)
 template<E>
 void Bag::clear()
 {
-    for( int i=0; i < size; i++)
+    for( int i=0; i < size_; i++)
     {
-        data[i] = null;
+        data_[i] = null;
     }
 
-    size = 0;
+    size_ = 0;
 }
 
 template<E>
 void Bag::insert_all(Bag<E> items)
 {
-    for( int i=0; items.size() > i; i++ )
+    for( int i=0; items.get_size() > i; i++ )
     {
         insert(items[i]);
     }

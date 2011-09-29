@@ -1,7 +1,8 @@
 #include "delayed_entity_system.hpp"
+#include "world.hpp"
 
-DelayedEntitySystem::DelayedEntitySystem(CompType*.. types)
-    : super(types)
+DelayedEntitySystem::DelayedEntitySystem(ComponentId compIds[])
+    : super(compIds)
 {
 }
 
@@ -15,7 +16,7 @@ bool DelayedEntitySystem::checkProcessing()
 {
     if( running_ )
     {
-        acc_ += world_.get_delta();
+        acc_ += world->get_delta();
 
         if( acc_ >= delay_)
         {

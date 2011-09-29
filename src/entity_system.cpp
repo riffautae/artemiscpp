@@ -2,17 +2,17 @@
 
 #include "boost/foreach.hpp"
 
-EntitySystem::EntitySystem(ComponentType& ... types)
+EntitySystem::EntitySystem(ComponentIds compIds[])
 {
-    actives = new Bag<Entity*>();
+    actives_ = Bag<Entity*>();
 
-    BOOST_FOREACH( ComponentType* type, types )
+    BOOST_FOREACH( ComponentId id, compIds )
     {
-        type_flags_ |= ct->getBit();
+        comp_bits_ |= id;
     }
 }
 
-void EntitySystem::setSystemBit(SystemBits bit)
+void EntitySystem::setSystemBit(SystemBit bit)
 {
     this->system_bit_ = bit;
 }
@@ -29,16 +29,16 @@ void EntitySystem::process()
 
 void EntitySystem::change(Entity* e)
 {
-    bool contains = (system_bit_ & e->getSystemBits()) == system_bit_;
-    bool interest = (type_flags_ & e->getTypeBits()) == type_bits_;
+    bool contains = (system_bit_ & e->get_system_bits()) == system_id_;
+    bool interest = (comp_bits_ & e->get_comp_bits()) == comp_bits_;
 
-    if (interest && !contains && typeFlags > 0)
+    if (interest && !contains && comp_bits_ > 0)
     {
         actives_->add(e);
-        e.addSystemBit(system_bit_);
+        e.addSystemBit(system_id_);
         added(e);
     }
-    else if (! interest && contaings && type_flags_ > 0)
+    else if (! interest && contains && comp_bits_ > 0)
     {
         remove(e);
     }
@@ -46,7 +46,7 @@ void EntitySystem::change(Entity* e)
 
 void EntitySystem::remove(Entity* e)
 {
-    actives.remove(e);
+    actives_.remove(e);
     e->removeSystemBit(system_bit_);
     removed(e);
 }
@@ -56,13 +56,3 @@ void EntitySystem::(World* world)
     this->world = world;
 }
 
-static (ComponentType*)[] EntitySystem::getMergedTypes(const ComponentType* requiredType, (ComponentType*)[] otherTypes)
-{
-    (ComponentType*)[] types = (ComponentType*)[1+otherTypes.length];
-    types[0] = requiredType;
-    BOOST_FOREACH(ComponentType* ct, otherTypes)
-    {
-        types[i+1] = ct;
-    }
-    return types;
-}
