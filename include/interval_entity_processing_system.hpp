@@ -1,18 +1,21 @@
 #ifndef ARTEMIS_INTERVAL_ENTITY_PROCESSING_SYSTEM_H
 #define ARTEMIS_INTERVAL_ENTITY_PROCESSING_SYSTEM_H
 
-#include "utils/immutable_bag.hpp"
+#include <list>
 
-class InterValEntityProcessingSystem : public IntervalEntitySystem
+#include "interval_entity_system.hpp"
+
+class Entity;
+
+class IntervalEntityProcessingSystem : public IntervalEntitySystem
 {
     public:
         IntervalEntityProcessingSystem(
-                int interval, ComponentType* requiredType,
-                ComponentType* ... otherTypes);
+                long interval, std::list<ComponentId> comp_ids);
 
     protected:
         virtual void process(Entity* e);
-        void processEntities(ImmutableBag<Entity*>* entities);
+        void processEntities(std::list<Entity*> entities);
 };
 
 #endif

@@ -2,15 +2,23 @@
 
 World::World()
 {
-    entity_manager_ = EntityManager(this);
-    group_manager_ = GroupManager(this);
-    system_manager_ = SystemManager(this);
-    tag_manager_ = TagManager(this);
+    entity_manager_ = new EntityManager(this);
+    group_manager_ = new GroupManager(this);
+    system_manager_ = new SystemManager(this);
+    tag_manager_ = new TagManager(this);
 
     refreshed = std::set<Entity*>();
     deleted = std::set<Entity*>();
 
     managers = std::tr1::unordered_map<ManagerId, Manager*>();
+}
+
+World::~World()
+{
+    delete entity_manager_;
+    delete group_manager_;
+    delete system_manager_;
+    delete tag_manager_;
 }
 
 EntityManager* World::get_entity_manager()
@@ -78,12 +86,12 @@ void World::refreshEntity(Entity* e)
 
 Entity* World::createEntity()
 {
-    return entity_manager_.create();
+    return entity_manager_->create();
 }
 
 Entity* World::getEntity(EntityId entityId)
 {
-    return entity_manager_.getEntity(entityId);
+    return entity_manager_->getEntity(entityId);
 }
 
 void World::loopStart()
@@ -92,7 +100,7 @@ void World::loopStart()
     {
         BOOST_FOREACH(Entity* e, refreshed_)
         {
-            entity_manager_.refresh(e);
+            entity_manager_->refresh(e);
         }
         refreshed.clear()
     }
@@ -101,9 +109,9 @@ void World::loopStart()
     {
         BOOST_FOREACH(Entity* e, deleted_)
         {
-            entity_manager_.remove(e);
-            group_manager_.remove(e);
-            tag_mananger_.remove(e);
+            entity_manager_->remove(e);
+            group_manager_->remove(e);
+            tag_mananger_->remove(e);
             delete e;
         }
         deleted.clear();

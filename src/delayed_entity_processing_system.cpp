@@ -1,13 +1,15 @@
+#include "boost/foreach.hpp"
+
 #include "delayed_entity_processing_system.hpp"
 
-DelayedEntityProcessingSystem::DelayedEntityProcessingSystem(ComponentId compIds[]) : DelayedEntitySystem(compIds)
+DelayedEntityProcessingSystem::DelayedEntityProcessingSystem(std::list<ComponentId> comp_ids) : DelayedEntitySystem::DelayedEntitySystem(comp_ids)
 {
 }
 
-void DelayedEntityProcessingSystem::processEntities(ImmutableBag<Entity*> entities, int accumulatedDelta)
+void DelayedEntityProcessingSystem::processEntities(std::list<Entity*> entities, long accumulatedDelta)
 {
-    for (int i = 0, s = entities.get_size(); s > i; i++)
+    BOOST_FOREACH(Entity* e, entities)
     {
-        process(entities.get(i), accumulatedDelta);
+        process(e, accumulatedDelta);
     }
 }

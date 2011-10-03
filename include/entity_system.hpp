@@ -1,6 +1,8 @@
 #ifndef ARTEMIS_ENTITY_SYSTEM
 #define ARTEMIS_ENTITY_SYSTEM
 
+#include <list>
+
 #include "util/bag.hpp"
 #include "util/immutable_bag.hpp"
 #include "util/typedefs.hpp"
@@ -12,19 +14,19 @@ class EntitySystem
 {
     public:
         EntitySystem();
-        EntitySystem(ComponentId compIds[]);
+        EntitySystem(std::list<ComponentId> compIds);
 
     protected:
-        World* world;
+        World* world_;
 
         void change(Entity* e);
         virtual void process();
-        void setSystemBit(SystemBits bit);
+        void setSystemId(SystemId id);
 
         virtual void begin();
         virtual void end();
         virtual bool checkProcessing();
-        virtual void processEntities(ImmutableBag<Entity*>& entities);
+        virtual void processEntities(std::list<Entity*> entities);
         virtual void initialize();
         virtual void added(Entity* e);
         virtual void removed(Entity* e);
@@ -32,7 +34,7 @@ class EntitySystem
     private:
         SystemId system_id_;
         ComponentBits comp_bits_;
-        Bag<Entity*> actives_;
+        std::list<Entity*> actives_;
 
         void remove(Entity* e);
         void setWorld(World* world);

@@ -1,18 +1,19 @@
 #include "interval_entity_system.hpp"
+#include "world.hpp"
 
 IntervalEntitySystem::IntervalEntitySystem(
-        int interval, ComponentType* ... types)
+        long interval, std::list<ComponentId> comp_ids) : 
+    EntitySystem::EntitySystem(comp_ids)
 {
-    EntitySystem::EntitySystem(types);
     this->interval_ = interval;
 }
 
 bool IntervalEntitySystem::checkProcessing()
 {
-    acc += world->get_delta();
-    if( acc >= interval )
+    acc_ += world_->get_delta();
+    if( acc_ >= interval_ )
     {
-        acc -= interval;
+        acc_ -= interval_;
         return true;
     }
     return false;

@@ -1,17 +1,19 @@
-#include "interval_entity_processing_system.hpp"
+#include "boost/foreach.hpp"
 
-InterValEntityProcessingSystem::InterValEntityProcessingSystem(
-        int interval, ComponentType* requiredType,
-        ComponentType* ... otherTypes)
-{
+#include "interval_entity_processing_system.hpp"
+#include "entity.hpp"
+
+IntervalEntityProcessingSystem::IntervalEntityProcessingSystem(
+        long interval, std::list<ComponentId> comp_ids) : 
     IntervalEntitySystem::IntervalEntitySystem(interval,
-            getMergedTypes(requiredType, otherTypes));
+            comp_ids)
+{
 }
 
-void InterValEntityProcessingSystem::processEntities(
-        ImmutableBag<Entity*>* entities)
+void IntervalEntityProcessingSystem::processEntities(
+        std::list<Entity*> entities)
 {
-    BOOST_FOREACH(Entity* e, *entities)
+    BOOST_FOREACH(Entity* e, entities)
     {
         process(e);
     }

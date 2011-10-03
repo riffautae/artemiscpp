@@ -11,11 +11,12 @@ EntityManager::EntityManager(World* world)
     active_entities_ = std::map<EntityId, Entity*>();
     removed_and_available_ = std::list<Entity*>();
 
-    components_by_id_ = MapCompIdMap();
+    components_by_ent_ = MapComp();
 }
 
 EntityManager::~EntityManager()
 {
+    //TODO: delete all entities and so on
     /*delete active_entities_;
     delete removed_and_available_;
     delete components_by_type_;
@@ -27,7 +28,7 @@ bool EntityManager::isActive(EntityId entity_id)
     return active_entities_.find(entity_id) != active_entities_.end();
 }
 
-int EntityManager::get_entity_count()
+long EntityManager::get_entity_count()
 {
     return count_;
 }
@@ -62,66 +63,77 @@ Entity* EntityManager::create()
     return e;
 }
 
-void EntityManager::addComponent(Entity* e, ComponentId comp_id)
+void EntityManager::addComponent(Entity* e, Component* component)
 {
-    MapCompIdMap::iterator compi = components_by_id_.find(comp_id);
-    MapEntIdComp* components;
+    MapComp::iterator enti = components_by_ent_.find(e->get_id());
 
-    if( compi == components_by_id_.end() )
+    // make sure we have this entity
+    if( enti != components_by_ent_.end() )
     {
-        components = new MapEntIdComp();
-        components_by_id_[comp_id] = components;
+        MapCompInner* components;
+        ComponentId comp_id = component->componentId;
+        components = enti->second;
+        MapCompInner::iterator inn = components->find(comp_id);
+        // component is not already in the entity
+        if( inn == components->end() )
+        {
+            (*components)[comp_id] = component;
+            e->addCompId(comp_id);
+        }
     }
-
-    components[e->get_id()] = component;
-
-    e->addCompId(comp_id);
 }
 
 Component* EntityManager::getComponent(Entity* e, ComponentId comp_id)
 {
-    MapCompIdMap::iterator compi = components_by_id_.find(comp_id);
-    MapEntIdComp* components;
+    MapComp::iterator enti = components_by_ent_.find(e->get_id());
+    MapComp* components;
 
-    if( compi != components_by_id_.end() )
+    // we have the entity
+    if( enti != components_by_ent_.end() )
     {
-        return compi;
+        MapCompInner* inn = enti->second;
+        MapCompInner::iterator compi = inn->find(comp_id);
+        // we have the component in this entity
+        if( compi != inn->end() )
+        {
+            return compi->second;
+        }
     }
     return NULL;
 }
 
-Entity* EntityManager::getEntity(EntityId entity_id) 
+void EntityManager::removeComponent(Entity* e, ComponentId comp_id)
 {
-    return active_entities_.find(entity_id);
-}
-
-int EntityManager::getEntityCount()
-{
-    return count_;
-}
-
-long EntityManager::getTotalCreated()
-{
-    return total_created_;
-}
-
-long EntityManager::getTotalRemoved()
-{
-   return total_removed_;
-}
-
-std::list<Component*> EntityManager::getComponents(Entity* e)
-{
-    std::list<Component*> entity_components();
-    MapCompIdMap::iterator component;
-    BOOST_FOREACH(MapCompIdMap components, components_by_id_)
+    MapComp::iterator enti = components_by_ent_.find(e->get_id());
+    if( enti != components_by_ent_.end() )
     {
-        component = components.find(e->get_id());
-        if( component != components.end() )
+        MapCompInner* inn = enti->second;
+        MapCompInner::iterator compi = inn->find(comp_id);
+        if( compi != inn->end() )
         {
-            entity_components_.push_back(component);
+            inn->erase(compi);
+            e->removeCompId(comp_id);
         }
     }
-    return entity_components_;
+}
+
+Entity* EntityManager::getEntity(EntityId entity_id) 
+{
+    return active_entities_.find(entity_id)->second;
+}
+
+std::map<ComponentId, Component*> EntityManager::getComponents(Entity* e)
+{
+    MapCompInner* entity_components;
+    MapCompInner* ret;
+    MapComp::iterator compi = components_by_ent_.find(e->get_id());
+
+    // check for ent
+    if( compi != components_by_ent_.end() )
+    {
+        // return a copy of its component map
+        entity_components = compi->second;
+        return (*entity_components);
+    }
 }
         

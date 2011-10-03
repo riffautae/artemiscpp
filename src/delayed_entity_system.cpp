@@ -1,12 +1,12 @@
 #include "delayed_entity_system.hpp"
 #include "world.hpp"
 
-DelayedEntitySystem::DelayedEntitySystem(ComponentId compIds[])
-    : super(compIds)
+DelayedEntitySystem::DelayedEntitySystem(std::list<ComponentId> comp_ids)
+    : EntitySystem::EntitySystem(comp_ids)
 {
 }
 
-void DelayedEntitySystem::processEntities(ImmutableBag<Entity*> entities)
+void DelayedEntitySystem::processEntities(std::list<Entity*> entities)
 {
     processEntities(entities, acc_);
     stop();
@@ -16,7 +16,7 @@ bool DelayedEntitySystem::checkProcessing()
 {
     if( running_ )
     {
-        acc_ += world->get_delta();
+        acc_ += world_->get_delta();
 
         if( acc_ >= delay_)
         {
@@ -26,19 +26,19 @@ bool DelayedEntitySystem::checkProcessing()
     return false;
 }
 
-void DelayedEntitySystem::startDelayedRun(int delay)
+void DelayedEntitySystem::startDelayedRun(long delay)
 {
     delay_ = delay;
     acc_ = 0;
     running_ = true;
 }
 
-int DelayedEntitySystem::get_initial_time_delay()
+long DelayedEntitySystem::get_initial_time_delay()
 {
     return delay_;
 }
 
-int DelayedEntitySystem::getRemainingTimeUntilProcessing()
+long DelayedEntitySystem::getRemainingTimeUntilProcessing()
 {
     if( running_ )
     {

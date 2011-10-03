@@ -4,6 +4,7 @@
 #include <string>
 
 #include "entity_manager.hpp"
+#include "entity_system.hpp"
 #include "util/typedefs.hpp"
 
 class Component;
@@ -13,7 +14,8 @@ template <class E> class ImmutableBag;
 
 class Entity
 {
-friend class EntityManager;
+    friend class EntityManager;
+    friend class EntitySystem;
     // getters/setters
     public:
         EntityId get_id();

@@ -1,15 +1,16 @@
 #include "entity_processing_system.hpp"
 
-EntityProcessingSystem::EntityProcessingSystem(ComponentType& requiredType, ComponentType& ... otherTypes)
+#include "boost/foreach.hpp"
+
+EntityProcessingSystem::EntityProcessingSystem(std::list<ComponentId> comp_ids) : EntitySystem::EntitySystem(comp_ids)
 {
-    EntitySystem::EntitySystem(getMergedTypes(requiredType, otherTypes));
 }
 
-void EntityProcessingSystem::processEntities(ImmutableBag<Entity*>& entities)
+void EntityProcessingSystem::processEntities(std::list<Entity*> entities)
 {
-    for( int i = 0, s = entities->size(); s > i; i++ )
+    BOOST_FOREACH(Entity* e, entities)
     {
-        process(entities->get(i));
+        process(e);
     }
 }
 

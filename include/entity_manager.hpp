@@ -23,11 +23,12 @@ class EntityManager
         long get_total_removed();
     protected:
         Entity* create();
-        void addComponent(Entity* e, ComponentId comp_id);
-        void getComponent(Entity* e, ComponentId comp_id);
+
+        void addComponent(Entity* e, Component* component);
+        Component* getComponent(Entity* e, ComponentId comp_id);
         void removeComponent(Entity* e, ComponentId comp_id);
 
-        std::list<Component*> getComponents(Entity* e);
+        std::map<ComponentId, Component*> getComponents(Entity* e);
         
         Entity* getEntity(EntityId entity_id);
 
@@ -37,16 +38,15 @@ class EntityManager
         World* world_;
         std::map<EntityId, Entity*> active_entities_;
         std::list<Entity*> removed_and_available_;
-        int next_available_id_;
-        int count_;
+        long next_available_id_;
+        long count_;
         long unique_entity_id_;
         long total_created_;
         long total_removed_;
-        typedef std::map<EntityId, Component*> MapEntIdComp;
-        typedef std::map<ComponentId, MapEntIdComp*> MapCompIdMap;
-        MapCompIdMap components_by_id_;
+        typedef std::map<ComponentId, Component*> MapCompInner;
+        typedef std::map<EntityId, MapCompInner*> MapComp;
+        MapComp components_by_ent_;
 
-        void removeComponentsOfEntity(Entity* entity);
 };
 
 #endif

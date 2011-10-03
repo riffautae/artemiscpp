@@ -1,19 +1,21 @@
 #ifndef ARTEMIS_SYSTEM_BIT_MANAGER_H
 #define ARTEMIS_SYSTEM_BIT_MANAGER_H
 
-#include <hash_map>
+#include <map>
 
 #include "util/typedefs.hpp"
+
+class EntitySystem;
 
 class SystemBitManager
 {
     public:
         SystemBitManager();
     protected:
-        static SystemBits getBitFor(EntitySyetem* es);
+        static SystemBits getBitFor(EntitySystem* es);
     private:
-        static int POS_;
-        static hash_map<EntitySystem*, SystemBits> systemBit;
+        static long POS_;
+        static std::map<EntitySystem*, SystemBits> system_bits_;
 
 };
 

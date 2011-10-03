@@ -14,12 +14,12 @@ class DelayedEntityProcessingSystem : public DelayedEntitySystem
          * @param requiredType the required component type.
          * @param otherTypes the other component types.
          */
-        DelayedEntityProcessingSystem(ComponentId compIds[]);
+        DelayedEntityProcessingSystem(std::list<ComponentId> comp_ids);
 
     protected:
         virtual void process(Entity* e, int accumulatedDelta) =0;
 
-        void processEntities(ImmutableBag<Entity*> entities, int accumulatedDelta);
+        virtual void processEntities(std::list<Entity*> entities, long accumulatedDelta);
 
     private:
         typedef DelayedEntitySystem super;

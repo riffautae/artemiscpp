@@ -15,10 +15,10 @@ class TagManager;
 class World
 {
     private:
-        EntityManager entity_manager_;
-        GroupManager group_manager_;
-        SystemManager system_manager_;
-        TagManager tag_manager_;
+        EntityManager* entity_manager_;
+        GroupManager* group_manager_;
+        SystemManager* system_manager_;
+        TagManager* tag_manager_;
 
         long delta;
         std::set<Entity*> refreshed_;
@@ -28,6 +28,7 @@ class World
 
     public:
         World();
+        ~World();
         EntityManager* get_entity_manager();
         GroupManager* get_group_manager();
         SystemManager* get_system_manager();

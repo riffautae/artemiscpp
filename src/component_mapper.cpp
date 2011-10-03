@@ -12,5 +12,5 @@ ComponentMapper<T>::ComponentMapper(ComponentId id, World* world)
 template <class T>
 T* ComponentMapper<T>::get(Entity* e)
 {
-    return dynamic_cast<T*>(em_->getComponent(e, id_));
+    return dynamic_cast<T>(em_->getComponent(e, id_));
 }

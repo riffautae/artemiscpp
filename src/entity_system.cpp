@@ -1,10 +1,11 @@
-#include "entity_system.hpp"
-
 #include "boost/foreach.hpp"
 
-EntitySystem::EntitySystem(ComponentIds compIds[])
+#include "entity.hpp"
+#include "entity_system.hpp"
+
+EntitySystem::EntitySystem(std::list<ComponentId> compIds)
 {
-    actives_ = Bag<Entity*>();
+    actives_ = std::list<Entity*>();
 
     BOOST_FOREACH( ComponentId id, compIds )
     {
@@ -12,9 +13,9 @@ EntitySystem::EntitySystem(ComponentIds compIds[])
     }
 }
 
-void EntitySystem::setSystemBit(SystemBit bit)
+void EntitySystem::setSystemId(SystemId id)
 {
-    this->system_bit_ = bit;
+    this->system_id_ = id;
 }
 
 void EntitySystem::process()
@@ -29,13 +30,13 @@ void EntitySystem::process()
 
 void EntitySystem::change(Entity* e)
 {
-    bool contains = (system_bit_ & e->get_system_bits()) == system_id_;
+    bool contains = (system_id_ & e->get_system_bits()) == system_id_;
     bool interest = (comp_bits_ & e->get_comp_bits()) == comp_bits_;
 
     if (interest && !contains && comp_bits_ > 0)
     {
-        actives_->add(e);
-        e.addSystemBit(system_id_);
+        actives_.push_back(e);
+        e->addSystemId(system_id_);
         added(e);
     }
     else if (! interest && contains && comp_bits_ > 0)
@@ -47,12 +48,12 @@ void EntitySystem::change(Entity* e)
 void EntitySystem::remove(Entity* e)
 {
     actives_.remove(e);
-    e->removeSystemBit(system_bit_);
+    e->removeSystemId(system_id_);
     removed(e);
 }
 
-void EntitySystem::(World* world)
+void EntitySystem::setWorld(World* world)
 {
-    this->world = world;
+    world_ = world;
 }
 

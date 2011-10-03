@@ -1,83 +1,85 @@
+#include "boost/foreach.hpp"
+
 #include "group_manager.hpp"
 
 GroupManager::GroupManager(World* world)
 {
-    this->world = world;
-    entities_by_group_ = new std::tr1::unordered_map<GroupId, Bag<Entity*>*>();
-    group_by_entity_ = new std::tr1::unordered_map<EntityId, GroupId>();
-    EMPTY_BAG_ = new Bag<Entity*>();
+    world_ = world;
+    entities_by_group_ = MapEnt();
+    group_by_entity_ = MapGroup();
 }
 
-~GroupManager::GroupManager()
+GroupManager::~GroupManager()
 {
-    BOOST_FOREACH(Bag<Entity*>* bag, entities_by_group_)
+    std::pair<GroupId, MapEntInner*> p;
+    BOOST_FOREACH(p, entities_by_group_)
     {
-        delete bag;
+        delete p.second;
     }
-    delete entities_by_group_;
-    delete group_by_entity_;
-    delete EMPTY_BAG_;
+    entities_by_group_.clear();
 }
 
 void GroupManager::set(GroupId group, Entity* e)
 {
     remove(e); // only one group per entity
 
-    std::unordered_map::iterator i = entities_by_group_->find(group);
-    if( i != entities_by_group_->end() )
+    MapEnt::iterator i = entities_by_group_.find(group);
+    MapEntInner* entities;
+    // dont have this group?
+    if( i == entities_by_group_.end() )
     {
-        Bag<Entity*>* entities = (*i);
-        entities = new Bag<Entity*>();
-        entities_by_group_->put(group, entities);
+        entities = new MapEntInner();
+        entities_by_group_[group] = entities;
     }
-    entities->add(e);
+    else
+    {
+        entities = i->second;
+    }
+    (*entities)[e->get_id()] = e;
 
-    group_by_entity_->set(e->get_id(), group);
+    group_by_entity_[e->get_id()] = group;
 }
 
-ImmutableBag<Entity*>* GroupManager::getEntities(GroupId group)
+std::map<EntityId, Entity*> GroupManager::getEntities(GroupId group)
 {
-    std::unordered_map::iterator i = entities_by_group_->get(group);
-    if( i != entities_by_group_->end() )
+    MapEnt::iterator i = entities_by_group_.find(group);
+    if( i != entities_by_group_.end() )
     {
-        Bag<Entity*>* bag = *i;
-        return bag;
+        MapEntInner ret = (*((*i).second)); // D:
+        return ret;
     }
-    return EMPTY_BAG;
+    return MapEntInner();
 }
 
 void GroupManager::remove(Entity* e)
 {
-    if( e->get_id() < group_by_entity_->getCapacity())
+    MapGroup::iterator groupi = group_by_entity_.find(e->get_id());
+    if( groupi != group_by_entity_.end() )
     {
-        unordered_map::iterator ig = group_by_entity_->find(e->get_id());
-        if( i != group_by_entity_->end() )
-        {
-            GroupId group = *i;
-            group_by_entity_->[e->get_id()] = NULL;
+        GroupId group = (*groupi).second;
+        group_by_entity_.erase(e->get_id());
 
-            unordered_map::iterator ie = entities_by_group_->find(group);
-            if( ie != entities_by_group_->end() )
-            {
-                Bag<Entity*>* entities = *ie;
-                ie->remove(e);
-            }
+        MapEnt::iterator ie = entities_by_group_.find(group);
+        if( ie != entities_by_group_.end() )
+        {
+            MapEntInner* entities = (*ie).second;
+            entities->erase(e->get_id());
         }
     }
 }
 
-GroupID GroupManager::getGroupOf(Entity* e)
+GroupId GroupManager::getGroupOf(Entity* e)
 {
-    std::unordered_map::iterator i = group_by_entity_->find(e->get_id());
-    if( i != group_by_entity_->end() )
+    MapGroup::iterator i = group_by_entity_.find(e->get_id());
+    if( i != group_by_entity_.end() )
     {
-        return (*i);
+        return (*i).second;
     }
     return NULL_GROUP;
 }
 
 bool GroupManager::isGrouped(Entity* e)
 {
-    std::unordered_map::iterator i = group_by_entity_->find(e->get_id());
-    return ( i == group_by_entity_->end() )
+    MapGroup::iterator i = group_by_entity_.find(e->get_id());
+    return ( i == group_by_entity_.end() );
 }
