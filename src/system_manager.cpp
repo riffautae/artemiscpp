@@ -1,35 +1,31 @@
+#include "boost/foreach.hpp"
+
 #include "system_manager.hpp"
+#include "entity_system.hpp"
+#include "world.hpp"
 
 SystemManager::SystemManager(World* world)
 {
     world_ = world;
-    systems_ = unordered_map<EntityId, EntitySystem*>();
-    bagged_ = Bag<EntitySystem*>();
+    systems_ = std::map<EntityId, EntitySystem*>();
 }
 
-EntitySystem* SystemManager::setSystem(EntitySystem* system)
+EntitySystem* SystemManager::addSystem(EntitySystem* system)
 {
-    system->setWorld(world_);
+    system->set_world(world_);
 
-    systems[system->getId] = system;
+    systems_[system->get_id()] = system;
     
-    if( !bagged.contains(system) )
-    {
-        bagged.add(system);
-    }
-
-    system->setSystemBit(SystemBitManager::getBitFor(system->getId));
-
     return system;
 }
 
-template <EntitySystem* T>
-T SystemManager::getSystem(EntityId id)
+template <class T>
+T* SystemManager::getSystem(SystemId id)
 {
-    unordered_map::iterator<T> i = systems.find(id);
-    if( i != systems.end() )
+    std::map<SystemId, EntitySystem*>::iterator sysi = systems_.find(id);
+    if( sysi != systems_.end() )
     {
-        return dynamic_cast<T>(systems[id]);
+        return dynamic_cast<T*>(*sysi);
     }
     else
     {
@@ -37,15 +33,16 @@ T SystemManager::getSystem(EntityId id)
     }
 }
 
-Bag<EntitySystem*> SystemManager::getSystems()
+std::map<SystemId, EntitySystem*> SystemManager::getSystems()
 {
-    return bagged;
+    return systems_; // makes a copy
 }
 
 void SystemManager::initializeAll()
 {
-    BOOST_FOREACH(int i, bagged)
+    std::pair<EntityId, EntitySystem*> p;
+    BOOST_FOREACH(p, systems_)
     {
-        i.initialize();
+        p.second->initialize();
     }
 }

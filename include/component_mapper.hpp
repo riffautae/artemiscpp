@@ -1,13 +1,10 @@
 #ifndef ARTEMIS_COMPONENTMAPPER_H
 #define ARTEMIS_COMPONENTMAPPER_H
 
-#include <string>
-
-#include "component.hpp"
-#include "entity.hpp"
-#include "entity_manager.hpp"
 #include "util/typedefs.hpp"
 
+class Entity;
+class EntityManager;
 class World;
 
 template <class T>

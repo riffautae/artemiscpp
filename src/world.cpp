@@ -1,3 +1,11 @@
+#include "boost/foreach.hpp"
+
+#include "entity.hpp"
+#include "entity_manager.hpp"
+#include "group_manager.hpp"
+#include "manager.hpp"
+#include "system_manager.hpp"
+#include "tag_manager.hpp"
 #include "world.hpp"
 
 World::World()
@@ -7,10 +15,10 @@ World::World()
     system_manager_ = new SystemManager(this);
     tag_manager_ = new TagManager(this);
 
-    refreshed = std::set<Entity*>();
-    deleted = std::set<Entity*>();
+    refreshed_ = std::set<Entity*>();
+    deleted_ = std::set<Entity*>();
 
-    managers = std::tr1::unordered_map<ManagerId, Manager*>();
+    managers_ = std::map<ManagerId, Manager*>();
 }
 
 World::~World()
@@ -43,13 +51,13 @@ TagManager* World::get_tag_manager()
 
 void World::setManager(Manager* manager)
 {
-    managers_[manager->getId] = manager;
+    managers_[manager->get_id()] = manager;
 }
 
-template<Manager T>
+template<class T>
 T* World::getManager(ManagerId manager)
 {
-    std::tr1::unordered_map::iterator<ManagerId, Manager*> i =
+    std::map<ManagerId, Manager*>::iterator i =
         managers_.find(manager);
     if( i != managers_.end() )
     {
@@ -73,9 +81,9 @@ void World::set_delta(int delta)
 
 void World::deleteEntity(Entity* e)
 {
-    if( deleted.find(e) != deleted.end() )
+    if( deleted_.find(e) != deleted_.end() )
     {
-        deleted.insert(e);
+        deleted_.insert(e);
     }
 }
 
@@ -96,24 +104,24 @@ Entity* World::getEntity(EntityId entityId)
 
 void World::loopStart()
 {
-    if( !refreshed.empty() )
+    if( !refreshed_.empty() )
     {
         BOOST_FOREACH(Entity* e, refreshed_)
         {
             entity_manager_->refresh(e);
         }
-        refreshed.clear()
+        refreshed_.clear();
     }
     
-    if( !deleted.empty() )
+    if( !deleted_.empty() )
     {
         BOOST_FOREACH(Entity* e, deleted_)
         {
             entity_manager_->remove(e);
             group_manager_->remove(e);
-            tag_mananger_->remove(e);
+            tag_manager_->remove(e);
             delete e;
         }
-        deleted.clear();
+        deleted_.clear();
     }
 }

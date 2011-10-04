@@ -4,21 +4,21 @@
 class Timer
 {
     public:
-        Timer(int delay, bool repeat);
-        void update(int delta);
+        Timer(long delay, bool repeat);
+        void update(long delta);
         void reset();
         bool is_done();
         bool is_running();
         void stop();
-        void set_delay(int delay);
-        int get_delay();
+        void set_delay(long delay);
+        long get_delay();
         virtual void execute();
         float get_percentage_remaining();
 
     private:
-        int delay;
+        long delay;
         bool repeat;
-        int acc;
+        long acc;
         bool done;
         bool stopped;
 };

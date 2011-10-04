@@ -2,7 +2,9 @@
 #define ARTEMIS_WORLD_H
 
 #include <set>
-#include <tr1/unordered_map>
+#include <map>
+
+#include "util/typedefs.hpp"
 
 template<class E> class Bag;
 class Entity;
@@ -20,11 +22,11 @@ class World
         SystemManager* system_manager_;
         TagManager* tag_manager_;
 
-        long delta;
+        long delta_;
         std::set<Entity*> refreshed_;
         std::set<Entity*> deleted_;
 
-        std::tr1::unordered_map<ManagerId, Manager*> managers_;
+        std::map<ManagerId, Manager*> managers_;
 
     public:
         World();

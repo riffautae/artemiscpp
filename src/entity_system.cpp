@@ -13,9 +13,14 @@ EntitySystem::EntitySystem(std::list<ComponentId> compIds)
     }
 }
 
-void EntitySystem::setSystemId(SystemId id)
+void EntitySystem::set_id(SystemId id)
 {
     this->system_id_ = id;
+}
+
+SystemId EntitySystem::get_id()
+{
+    return system_id_;
 }
 
 void EntitySystem::process()
@@ -52,7 +57,7 @@ void EntitySystem::remove(Entity* e)
     removed(e);
 }
 
-void EntitySystem::setWorld(World* world)
+void EntitySystem::set_world(World* world)
 {
     world_ = world;
 }

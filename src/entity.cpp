@@ -56,27 +56,6 @@ void Entity::set_comp_bits(ComponentBits comp_bits)
 
 
 ///////// other
-
-void Entity::addComponent(ComponentId id)
-{
-    entity_manager_->addComponent(this, id);
-}
-
-void Entity::removeComponent(ComponentId id)
-{
-    entity_manager_->removeComponent(this, id);
-}
-
-Component* Entity::getComponent(ComponentId id)
-{
-    return entity_manager_->getComponent(this, id);
-}
-
-ImmutableBag<Component*>* Entity::getComponents()
-{
-    return entity_manager_->getComponents(this);
-}
-
 void Entity::setGroup(GroupId group)
 {
     world_->get_group_manager()->set(group, this);

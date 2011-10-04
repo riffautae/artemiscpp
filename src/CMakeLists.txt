@@ -20,7 +20,7 @@ set(SRCS
     group_manager.cpp 
     interval_entity_processing_system.cpp
     interval_entity_system.cpp
-    system_bit_manager.cpp
+    manager.cpp
     system_manager.cpp
     tag_manager.cpp
     world.cpp

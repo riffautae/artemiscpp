@@ -1,18 +1,21 @@
-#include "Timer.h"
+#include "util/timer.hpp"
 
-Timer::Timer(int delay, bool repeat)
+Timer::Timer(long delay, bool repeat)
 {
     this->delay = delay;
     this->repeat = repeat;
     this->acc = 0;
 }
 
-void Timer::update(int delta)
+void Timer::update(long delta)
 {
-    if (!done && !stopped) {
-    acc += delta;
+    if (!done && !stopped)
+    {
+        acc += delta;
+    }
 
-    if (acc >= delay) {
+    if (acc >= delay)
+    {
         acc -= delay;
 
         if (repeat) {
@@ -47,7 +50,7 @@ void Timer::stop()
     stopped = true;
 }
 
-void Timer::set_delay(int delay)
+void Timer::set_delay(long delay)
 {
     this->delay = delay;
 }
@@ -62,7 +65,7 @@ float Timer::get_percentage_remaining()
         return 1.0 - (float) (delay - acc) / (float) delay;
 }
 
-int Timer::get_delay()
+long Timer::get_delay()
 {
     return delay;
 }

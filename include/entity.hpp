@@ -10,8 +10,6 @@
 class Component;
 class World;
 
-template <class E> class ImmutableBag;
-
 class Entity
 {
     friend class EntityManager;
@@ -24,7 +22,7 @@ class Entity
     protected:
         void set_unique_id(EntityId unique_id);
         EntityId get_system_bits();
-        void set_system_bits(long system_bits);
+        void set_system_bits(SystemBits system_bits);
         ComponentBits get_comp_bits();
         void set_comp_bits(ComponentBits comp_bits);
 
@@ -45,12 +43,6 @@ class Entity
         void addCompId(ComponentId id);
         void removeCompId(ComponentId id);
 
-        void addComponent(Component* component);
-        void addComponent(ComponentId id);
-        void removeComponent(Component* component);
-        void removeComponent(ComponentId id);
-        Component* getComponent(ComponentId id);
-        ImmutableBag<Component*>* getComponents();
     private:
         EntityId id_;
         EntityId unique_id_;

@@ -1,18 +1,22 @@
+#include "entity.hpp"
 #include "tag_manager.hpp"
 
 TagManager::TagManager(World* world)
 {
     world_ = world;
-    entity_by_tag_ = std::tr1::unordered_map<std::string, Entity*>();
+    entity_by_tag_ = std::map<TagId, Entity*>();
+    tag_by_entity_ = std::map<EntityId, TagId>();
 }
 
 void TagManager::set(TagId tag, Entity* e)
 {
     entity_by_tag_[tag] = e;
+    tag_by_entity_[e->get_id()] = tag;
 }
 
 void TagManager::unset(TagId tag)
 {
+    tag_by_entity_.erase(getEntity(tag)->get_id());
     entity_by_tag_.erase(tag);
 }
 
@@ -23,19 +27,12 @@ bool TagManager::isSet(TagId tag)
 
 void TagManager::remove(Entity* e)
 {
-    bool found = false;
-    std::string etag;
-    BOOST_FOREACH(std::string tag, entity_by_tag_)
+    std::map<EntityId, TagId>::iterator enti =
+        tag_by_entity_.find(e->get_id());
+
+    if( enti != tag_by_entity_.end() )
     {
-        Entity* mye = entity_by_tag_[tag];
-        if( mye == e )
-        {
-            etag = tag;
-            found = true;
-        }
-    }
-    if( found )
-    {
-        entity_by_tag_.erase(etag);
+        tag_by_entity_.erase(e->get_id());
+        entity_by_tag_.erase((*enti).second);
     }
 }

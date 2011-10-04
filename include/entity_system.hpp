@@ -3,6 +3,8 @@
 
 #include <list>
 
+#include "system_manager.hpp"
+
 #include "util/bag.hpp"
 #include "util/immutable_bag.hpp"
 #include "util/typedefs.hpp"
@@ -12,6 +14,7 @@ class World;
 
 class EntitySystem
 {
+    friend class SystemManager;
     public:
         EntitySystem();
         EntitySystem(std::list<ComponentId> compIds);
@@ -21,7 +24,9 @@ class EntitySystem
 
         void change(Entity* e);
         virtual void process();
-        void setSystemId(SystemId id);
+
+        SystemId get_id();
+        void set_id(SystemId id);
 
         virtual void begin();
         virtual void end();
@@ -37,7 +42,7 @@ class EntitySystem
         std::list<Entity*> actives_;
 
         void remove(Entity* e);
-        void setWorld(World* world);
+        void set_world(World* world);
 };
 
 #endif

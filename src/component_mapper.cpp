@@ -1,5 +1,7 @@
 #include "component_mapper.hpp"
 
+#include "entity.hpp"
+#include "entity_manager.hpp"
 #include "world.hpp"
 
 template <class T>

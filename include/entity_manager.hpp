@@ -13,6 +13,7 @@ class World;
 
 class EntityManager
 {
+    friend class World;
     public:
         EntityManager(World* world);
         ~EntityManager();
@@ -21,19 +22,16 @@ class EntityManager
         long get_entity_count();
         long get_total_created();
         long get_total_removed();
-    protected:
+
         Entity* create();
+        void remove(Entity* e);
+        void refresh(Entity* e);
+        Entity* getEntity(EntityId entity_id);
 
         void addComponent(Entity* e, Component* component);
         Component* getComponent(Entity* e, ComponentId comp_id);
         void removeComponent(Entity* e, ComponentId comp_id);
-
         std::map<ComponentId, Component*> getComponents(Entity* e);
-        
-        Entity* getEntity(EntityId entity_id);
-
-        void remove(Entity* e);
-        void refresh(Entity* e);
     private:
         World* world_;
         std::map<EntityId, Entity*> active_entities_;
