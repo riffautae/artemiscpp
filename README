@@ -1,0 +1,3 @@
+A C++ fork of the Artemis Component Entity framework.
+
+Currently compiles but I have not tried testing any functionality so I doubt it works yet.
