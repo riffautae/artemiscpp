@@ -3,17 +3,34 @@
 
 #include <list>
 
+#include "entity.hpp"
 #include "entity_system.hpp"
 
-class EntityProcessingSystem : public EntitySystem
+namespace Artemis
 {
-    public:
-        EntityProcessingSystem(std::list<ComponentId> comp_ids);
+    /**
+     * A typical entity system. Use this when you need to process entities
+     * possessing the provided component types.
+     */
+    class EntityProcessingSystem : public EntitySystem
+    {
+        public:
+            /**
+             * Create a new entity processing system. It requires at least one
+             * component.
+             * @param comp_ids the components it requires
+             */
+            EntityProcessingSystem(std::list<ComponentId> comp_ids, World& world);
 
-    protected:
-        virtual void process(Entity* e);
-        void processEntities(std::list<Entity*> entities);
-        virtual bool checkProcessing();
+            /**
+             * Process an entity this system is interested in
+             * @param e the entity to process
+             */
+            virtual void process(EntityPtr e);
+            void processEntities(std::list<EntityPtr> entities);
+
+        protected:
+            virtual bool checkProcessing();
+    };
 };
-
 #endif

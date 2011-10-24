@@ -4,15 +4,21 @@
 #include <list>
 #include "entity_system.hpp"
 
-class IntervalEntitySystem : public EntitySystem
+namespace Artemis
 {
-    public:
-        IntervalEntitySystem(long interval, std::list<ComponentId> comp_ids);
-    protected:
-        bool checkProcessing();
-    private:
-        long acc_;
-        long interval_;
+    /**
+     * A system that processes entities at an interval in milliseconds.
+     * A typical usage would be a collision system or physics system.
+     */
+    class IntervalEntitySystem : public EntitySystem
+    {
+        public:
+            IntervalEntitySystem(long interval, std::list<ComponentId> comp_ids, World& world);
+        protected:
+            bool checkProcessing();
+        private:
+            long acc_;
+            long interval_;
+    };
 };
-
 #endif

@@ -3,17 +3,18 @@
 #include "interval_entity_processing_system.hpp"
 #include "entity.hpp"
 
+using namespace Artemis;
 IntervalEntityProcessingSystem::IntervalEntityProcessingSystem(
-        long interval, std::list<ComponentId> comp_ids) : 
-    IntervalEntitySystem::IntervalEntitySystem(interval,
-            comp_ids)
+        long interval, std::list<ComponentId> comp_ids, World& world) : 
+    IntervalEntitySystem::IntervalEntitySystem(
+            interval, comp_ids, world)
 {
 }
 
 void IntervalEntityProcessingSystem::processEntities(
-        std::list<Entity*> entities)
+        std::list<EntityPtr> entities)
 {
-    BOOST_FOREACH(Entity* e, entities)
+    BOOST_FOREACH(EntityPtr e, entities)
     {
         process(e);
     }

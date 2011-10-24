@@ -1,5 +1,6 @@
 #include "util/timer.hpp"
 
+using namespace Artemis;
 Timer::Timer(long delay, bool repeat)
 {
     this->delay = delay;

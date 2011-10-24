@@ -1,14 +1,14 @@
 #include "entity.hpp"
 #include "tag_manager.hpp"
 
-TagManager::TagManager(World* world)
+using namespace Artemis;
+TagManager::TagManager()
 {
-    world_ = world;
-    entity_by_tag_ = std::map<TagId, Entity*>();
+    entity_by_tag_ = std::map<TagId, EntityPtr>();
     tag_by_entity_ = std::map<EntityId, TagId>();
 }
 
-void TagManager::set(TagId tag, Entity* e)
+void TagManager::set(TagId tag, EntityPtr e)
 {
     entity_by_tag_[tag] = e;
     tag_by_entity_[e->get_id()] = tag;
@@ -25,7 +25,7 @@ bool TagManager::isSet(TagId tag)
     return entity_by_tag_.find(tag) != entity_by_tag_.end();
 }
 
-void TagManager::remove(Entity* e)
+void TagManager::remove(EntityPtr e)
 {
     std::map<EntityId, TagId>::iterator enti =
         tag_by_entity_.find(e->get_id());

@@ -4,32 +4,65 @@
 #include <tr1/unordered_map>
 
 #include "entity.hpp"
-#include "world.hpp"
 
 #include "util/typedefs.hpp"
 
-class World;
-
-class GroupManager
+namespace Artemis
 {
-    public:
-        GroupManager(World* world);
-        ~GroupManager();
-        void set(GroupId group, Entity* e);
-        std::map<EntityId, Entity*> getEntities(GroupId group);
-        void remove(Entity* e);
-        GroupId getGroupOf(Entity* e);
-        bool isGrouped(Entity* e);
+    /**
+     * If you need to group your entities together, e.g. tanks going into
+     * "units" group or explosions into "effects",
+     * then use this manager, You must retrieve it using world instance.
+     *
+     * An entity can only belong to one group at a time.
+     */
+    class GroupManager
+    {
+        public:
+            GroupManager();
 
-        static const GroupId NULL_GROUP = 0;
+            /**
+             * Set the group of the entity
+             *
+             * @param group to set the entity into.
+             * @param e entity to set into the group
+             */
+            void set(GroupId group, EntityPtr e);
 
-    private:
-        World* world_;
-        typedef std::map<EntityId, Entity*> MapEntInner; 
-        typedef std::map<GroupId, MapEntInner*> MapEnt;
-        MapEnt entities_by_group_;
-        typedef std::map<EntityId, GroupId> MapGroup;
-        MapGroup group_by_entity_;
+            /**
+             * Get all entities that belong to the provided group
+             * @param group name of the group.
+             * @return map of the entities in the group
+             */
+            std::map<EntityId, EntityWkPtr> getEntities(GroupId group);
+
+            /**
+             * Removes the entity from whatever group it is assigned to.
+             * @param e the entity
+             */
+            void remove(EntityPtr e);
+
+            /**
+             * @param e entity
+             * @return the Id of the group or NULL_GROUP
+             */
+            GroupId getGroupOf(EntityPtr e);
+
+            /**
+             * Checks if the entity belongs to any group.
+             * @param e the entity to check
+             * @return true if it is any group, false if none.
+             */
+            bool isGrouped(EntityPtr e);
+
+            static const GroupId NULL_GROUP = 0;
+
+        private:
+            typedef std::map<EntityId, EntityWkPtr> MapEntInner; 
+            typedef std::map<GroupId, MapEntInner> MapEnt;
+            MapEnt entities_by_group_;
+            typedef std::map<EntityId, GroupId> MapGroup;
+            MapGroup group_by_entity_;
+    };
 };
-
 #endif

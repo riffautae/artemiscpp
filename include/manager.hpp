@@ -3,12 +3,14 @@
 
 #include "util/typedefs.hpp"
 
-class Manager
+namespace Artemis
 {
-    public:
-        ManagerId get_id();
-    protected:
-        ManagerId id_;
+    class Manager
+    {
+        public:
+            ManagerId get_id();
+        protected:
+            ManagerId id_;
+    };
 };
-
 #endif

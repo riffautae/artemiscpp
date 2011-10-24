@@ -1,5 +1,5 @@
-#include "entity.hpp"
 
+#include "entity.hpp"
 #include "entity_manager.hpp"
 #include "group_manager.hpp"
 #include "tag_manager.hpp"
@@ -7,10 +7,12 @@
 
 #include <sstream>
 
-Entity::Entity(World* world, EntityId id)
+using namespace Artemis;
+
+Entity::Entity(World& world, EntityId id)
+    : world_(world)
 {
-    this->world_ = world;
-    this->entity_manager_ = world_->get_entity_manager();
+    this->entity_manager_ = world_.get_entity_manager();
     this->id_ = id;
 }
 
@@ -56,16 +58,6 @@ void Entity::set_comp_bits(ComponentBits comp_bits)
 
 
 ///////// other
-void Entity::setGroup(GroupId group)
-{
-    world_->get_group_manager()->set(group, this);
-}
-
-void Entity::setTag(TagId tag)
-{
-    world_->get_tag_manager()->set(tag, this);
-}
-
 std::string Entity::toString()
 {
     std::stringstream build;
@@ -75,16 +67,6 @@ std::string Entity::toString()
     std::string ret;
     build >> ret;
     return ret;
-}
-
-void Entity::refresh()
-{
-    world_->refreshEntity(this);
-}
-
-void Entity::remove()
-{
-    world_->deleteEntity(this);
 }
 
 void Entity::reset()

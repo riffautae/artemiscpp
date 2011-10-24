@@ -1,16 +1,4 @@
-
-find_package(Boost REQUIRED)
-
-link_directories(
-    ${Boost_LIBRARY_DIRS}
-    )
-
-include_directories(
-    ${CMAKE_SOURCE_DIR}/include
-    ${Boost_INCLUDE_DIRS}
-    )
 set(SRCS
-    component_mapper.cpp
     delayed_entity_processing_system.cpp 
     delayed_entity_system.cpp
     entity.cpp

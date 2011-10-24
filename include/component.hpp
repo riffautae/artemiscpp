@@ -3,9 +3,15 @@
 
 #include "util/typedefs.hpp"
 
-class Component {
-    public:
-        static ComponentId componentId;
+/**
+ * A tag class. All components in the system must extend this class.
+ */
+namespace Artemis
+{
+    class Component {
+        public:
+            static ComponentId componentId;
+    };
 };
 
 #endif

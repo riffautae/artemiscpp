@@ -1,15 +1,15 @@
-#include "entity_manager.hpp"
-
 #include "component.hpp"
 #include "entity.hpp"
+#include "entity_manager.hpp"
 #include "world.hpp"
+#include "pointers/entity.hpp"
 
-EntityManager::EntityManager(World* world)
+using namespace Artemis;
+EntityManager::EntityManager(World& world):
+    world_(world)
 {
-    world_ = world;
-
-    active_entities_ = std::map<EntityId, Entity*>();
-    removed_and_available_ = std::list<Entity*>();
+    active_entities_ = std::map<EntityId, EntityPtr>();
+    removed_and_available_ = std::list<EntityPtr>();
 
     components_by_ent_ = MapComp();
 }
@@ -43,12 +43,12 @@ long EntityManager::get_total_removed()
     return total_removed_;
 }
 
-Entity* EntityManager::create()
+EntityPtr EntityManager::create()
 {
-    Entity* e;
+    EntityPtr e;
     if( !removed_and_available_.empty() )
     {
-        e = new Entity(world_, next_available_id_++);
+        e = EntityPtr(new Entity(world_, next_available_id_++));
     }
     else
     {
@@ -63,77 +63,103 @@ Entity* EntityManager::create()
     return e;
 }
 
-void EntityManager::addComponent(Entity* e, Component* component)
+void EntityManager::remove(EntityPtr e)
+{
+    active_entities_.erase(e->get_id());
+
+    e->set_comp_bits(0);
+
+    refresh(e);
+
+    // all the compid->component mappings
+    MapComp::iterator enti = components_by_ent_.find(e->get_id());
+    if( enti != components_by_ent_.end() )
+    {
+        // the compid->component mapping for a specific entity
+        MapCompInner& components = enti->second;
+
+        // remove all the component from the entity
+        e->set_comp_bits(0);
+
+        // since they are shared pointers, this should delete them all
+        components.clear();
+
+        // remove the inner map
+        components_by_ent_.erase(e->get_id());
+    }
+
+    count_--;
+    total_removed_--;
+
+    removed_and_available_.push_back(e);
+}
+
+void EntityManager::addComponent(EntityPtr e, ComponentPtr component)
 {
     MapComp::iterator enti = components_by_ent_.find(e->get_id());
 
     // make sure we have this entity
     if( enti != components_by_ent_.end() )
     {
-        MapCompInner* components;
+        MapCompInner& components = enti->second;
         ComponentId comp_id = component->componentId;
-        components = enti->second;
-        MapCompInner::iterator inn = components->find(comp_id);
+        MapCompInner::iterator inn = components.find(comp_id);
         // component is not already in the entity
-        if( inn == components->end() )
+        if( inn == components.end() )
         {
-            (*components)[comp_id] = component;
+            components[comp_id] = component;
             e->addCompId(comp_id);
         }
     }
 }
 
-Component* EntityManager::getComponent(Entity* e, ComponentId comp_id)
+ComponentPtr EntityManager::getComponent(EntityPtr e, ComponentId comp_id)
 {
     MapComp::iterator enti = components_by_ent_.find(e->get_id());
-    MapComp* components;
 
     // we have the entity
     if( enti != components_by_ent_.end() )
     {
-        MapCompInner* inn = enti->second;
-        MapCompInner::iterator compi = inn->find(comp_id);
+        MapCompInner& inn = enti->second;
+        MapCompInner::iterator compi = inn.find(comp_id);
         // we have the component in this entity
-        if( compi != inn->end() )
+        if( compi != inn.end() )
         {
             return compi->second;
         }
     }
-    return NULL;
+    return ComponentPtr(); //null
 }
 
-void EntityManager::removeComponent(Entity* e, ComponentId comp_id)
+void EntityManager::removeComponent(EntityPtr e, ComponentId comp_id)
 {
     MapComp::iterator enti = components_by_ent_.find(e->get_id());
     if( enti != components_by_ent_.end() )
     {
-        MapCompInner* inn = enti->second;
-        MapCompInner::iterator compi = inn->find(comp_id);
-        if( compi != inn->end() )
+        MapCompInner& inn = enti->second;
+        MapCompInner::iterator compi = inn.find(comp_id);
+        if( compi != inn.end() )
         {
-            inn->erase(compi);
             e->removeCompId(comp_id);
+            inn.erase(compi);
         }
     }
 }
 
-Entity* EntityManager::getEntity(EntityId entity_id) 
+EntityPtr EntityManager::getEntity(EntityId entity_id) 
 {
     return active_entities_.find(entity_id)->second;
 }
 
-std::map<ComponentId, Component*> EntityManager::getComponents(Entity* e)
+std::map<ComponentId, ComponentPtr> EntityManager::getComponents(EntityPtr e)
 {
-    MapCompInner* entity_components;
-    MapCompInner* ret;
     MapComp::iterator compi = components_by_ent_.find(e->get_id());
 
     // check for ent
     if( compi != components_by_ent_.end() )
     {
         // return a copy of its component map
-        entity_components = compi->second;
-        return (*entity_components);
+        return compi->second;
     }
 }
         

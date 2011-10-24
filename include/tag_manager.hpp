@@ -3,25 +3,28 @@
 
 #include <map>
 
-#include "world.hpp"
+#include "pointers/entity.hpp"
 #include "util/typedefs.hpp"
 
-class TagManager
+namespace Artemis
 {
-    friend class World;
-    private:
-        World* world_;
-        std::map<TagId, Entity*> entity_by_tag_;
-        std::map<EntityId, TagId> tag_by_entity_;
+    /**
+     * If you need to tag any entity, use this. A typical usage would be to tag
+     * entities such as "PLAYER". After creating an entity call register().
+     */
+    class TagManager
+    {
+        private:
+            std::map<TagId, EntityPtr> entity_by_tag_;
+            std::map<EntityId, TagId> tag_by_entity_;
 
-    protected:
-        void remove(Entity* e);
-        
-    public:
-        TagManager(World* world);
-        void set(TagId tag, Entity* e);
-        void unset(TagId tag);
-        bool isSet(TagId tag);
-        Entity* getEntity(TagId tag);
+        public:
+            void remove(EntityPtr e);
+            TagManager();
+            void set(TagId tag, EntityPtr e);
+            void unset(TagId tag);
+            bool isSet(TagId tag);
+            EntityPtr getEntity(TagId tag);
+    };
 };
 #endif

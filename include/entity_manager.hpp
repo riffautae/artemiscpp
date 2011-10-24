@@ -4,47 +4,72 @@
 #include <map>
 #include <list>
 
+#include "pointers/entity.hpp"
+#include "pointers/component.hpp"
+
+#include "entity.hpp"
+#include "world.hpp"
 #include "util/typedefs.hpp"
 
-
-class Component;
-class Entity;
-class World;
-
-class EntityManager
+namespace Artemis
 {
-    friend class World;
-    public:
-        EntityManager(World* world);
-        ~EntityManager();
+    class Component;
+    class Entity;
+    class World;
 
-        bool isActive(EntityId entity_id);
-        long get_entity_count();
-        long get_total_created();
-        long get_total_removed();
+    class EntityManager
+    {
+        friend class World;
+        public:
+            EntityManager(World& world);
+            ~EntityManager();
 
-        Entity* create();
-        void remove(Entity* e);
-        void refresh(Entity* e);
-        Entity* getEntity(EntityId entity_id);
+            /**
+             * Check if this entity is active, or has been deleted, within the
+             * framework.
+             *
+             * @param entity_id the entity
+             * @return active or not
+             */
+            bool isActive(EntityId entity_id);
 
-        void addComponent(Entity* e, Component* component);
-        Component* getComponent(Entity* e, ComponentId comp_id);
-        void removeComponent(Entity* e, ComponentId comp_id);
-        std::map<ComponentId, Component*> getComponents(Entity* e);
-    private:
-        World* world_;
-        std::map<EntityId, Entity*> active_entities_;
-        std::list<Entity*> removed_and_available_;
-        long next_available_id_;
-        long count_;
-        long unique_entity_id_;
-        long total_created_;
-        long total_removed_;
-        typedef std::map<ComponentId, Component*> MapCompInner;
-        typedef std::map<EntityId, MapCompInner*> MapComp;
-        MapComp components_by_ent_;
+            /**
+             * @return how many entities are currently active
+             */
+            long get_entity_count();
 
+            /**
+             * @return how many entities have been created since start.
+             */
+            long get_total_created();
+
+            /**
+             * @return how many entities have been removed since start.
+             */
+            long get_total_removed();
+
+            EntityPtr create();
+            void remove(EntityPtr e);
+            void refresh(EntityPtr e);
+            EntityPtr getEntity(EntityId entity_id);
+
+            void addComponent(EntityPtr e, ComponentPtr component);
+            ComponentPtr getComponent(EntityPtr e, ComponentId comp_id);
+            void removeComponent(EntityPtr e, ComponentId comp_id);
+            std::map<ComponentId, ComponentPtr> getComponents(EntityPtr e);
+        private:
+            World& world_;
+            std::map<EntityId, EntityPtr> active_entities_;
+            std::list<EntityPtr> removed_and_available_;
+            long next_available_id_;
+            long count_;
+            long unique_entity_id_;
+            long total_created_;
+            long total_removed_;
+            typedef std::map<ComponentId, ComponentPtr> MapCompInner;
+            typedef std::map<EntityId, MapCompInner> MapComp;
+            MapComp components_by_ent_;
+
+    };
 };
-
 #endif

@@ -2,13 +2,15 @@
 
 #include "boost/foreach.hpp"
 
-EntityProcessingSystem::EntityProcessingSystem(std::list<ComponentId> comp_ids) : EntitySystem::EntitySystem(comp_ids)
+using namespace Artemis;
+EntityProcessingSystem::EntityProcessingSystem(std::list<ComponentId> comp_ids, World& world) :
+    EntitySystem::EntitySystem(comp_ids, world)
 {
 }
 
-void EntityProcessingSystem::processEntities(std::list<Entity*> entities)
+void EntityProcessingSystem::processEntities(std::list<EntityPtr> entities)
 {
-    BOOST_FOREACH(Entity* e, entities)
+    BOOST_FOREACH(EntityPtr e, entities)
     {
         process(e);
     }

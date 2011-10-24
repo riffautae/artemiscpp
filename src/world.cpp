@@ -1,4 +1,5 @@
 #include "boost/foreach.hpp"
+#include "boost/shared_ptr.hpp"
 
 #include "entity.hpp"
 #include "entity_manager.hpp"
@@ -8,64 +9,64 @@
 #include "tag_manager.hpp"
 #include "world.hpp"
 
+#include "pointers/entity.hpp"
+
+using namespace Artemis;
+#define NEWMANAGERTHIS(man) boost::shared_ptr<man>(new man(*this));
+#define NEWMANAGER(man) boost::shared_ptr<man>(new man());
 World::World()
 {
-    entity_manager_ = new EntityManager(this);
-    group_manager_ = new GroupManager(this);
-    system_manager_ = new SystemManager(this);
-    tag_manager_ = new TagManager(this);
+    entity_manager_ = NEWMANAGERTHIS(EntityManager);
+    group_manager_ = NEWMANAGER(GroupManager);
+    system_manager_ = NEWMANAGERTHIS(SystemManager);
+    tag_manager_ = NEWMANAGER(TagManager);
 
-    refreshed_ = std::set<Entity*>();
-    deleted_ = std::set<Entity*>();
+    refreshed_ = std::set<EntityPtr>();
+    deleted_ = std::set<EntityPtr>();
 
-    managers_ = std::map<ManagerId, Manager*>();
+    managers_ = ManagerMap();
 }
 
 World::~World()
 {
-    delete entity_manager_;
-    delete group_manager_;
-    delete system_manager_;
-    delete tag_manager_;
 }
 
-EntityManager* World::get_entity_manager()
+boost::shared_ptr<EntityManager> World::get_entity_manager()
 {
     return entity_manager_;
 }
 
-GroupManager* World::get_group_manager()
+boost::shared_ptr<GroupManager> World::get_group_manager()
 {
     return group_manager_;
 }
 
-SystemManager* World::get_system_manager()
+boost::shared_ptr<SystemManager> World::get_system_manager()
 {
     return system_manager_;
 }
 
-TagManager* World::get_tag_manager()
+boost::shared_ptr<TagManager> World::get_tag_manager()
 {
     return tag_manager_;
 }
 
-void World::setManager(Manager* manager)
+void World::setManager(boost::shared_ptr<Manager> manager)
 {
     managers_[manager->get_id()] = manager;
 }
 
-template<class T>
-T* World::getManager(ManagerId manager)
+ManagerPtr World::getManager(ManagerId manager)
 {
-    std::map<ManagerId, Manager*>::iterator i =
+    ManagerMap::iterator i =
         managers_.find(manager);
     if( i != managers_.end() )
     {
-        return dynamic_cast<T*>(i);
+        return i->second;
     }
     else
     {
-        return NULL;
+        return ManagerPtr(); //null ptr
     }
 }
 
@@ -79,7 +80,7 @@ void World::set_delta(int delta)
     delta_ = delta;
 }
 
-void World::deleteEntity(Entity* e)
+void World::deleteEntity(EntityPtr e)
 {
     if( deleted_.find(e) != deleted_.end() )
     {
@@ -87,17 +88,17 @@ void World::deleteEntity(Entity* e)
     }
 }
 
-void World::refreshEntity(Entity* e)
+void World::refreshEntity(EntityPtr e)
 {
     refreshed_.insert(e);
 }
 
-Entity* World::createEntity()
+EntityPtr World::createEntity()
 {
     return entity_manager_->create();
 }
 
-Entity* World::getEntity(EntityId entityId)
+EntityPtr World::getEntity(EntityId entityId)
 {
     return entity_manager_->getEntity(entityId);
 }
@@ -106,7 +107,7 @@ void World::loopStart()
 {
     if( !refreshed_.empty() )
     {
-        BOOST_FOREACH(Entity* e, refreshed_)
+        BOOST_FOREACH(EntityPtr e, refreshed_)
         {
             entity_manager_->refresh(e);
         }
@@ -115,12 +116,19 @@ void World::loopStart()
     
     if( !deleted_.empty() )
     {
-        BOOST_FOREACH(Entity* e, deleted_)
+        BOOST_FOREACH(EntityPtr e, deleted_)
         {
             entity_manager_->remove(e);
             group_manager_->remove(e);
             tag_manager_->remove(e);
-            delete e;
+
+            //TODO: this stuff
+            /*BOOST_FOREACH(ManagerMap::value_type mans,
+
+                   managers_)
+            {
+                mans.second->remove(e);
+            }*/
         }
         deleted_.clear();
     }

@@ -1,48 +1,84 @@
-#ifndef ARTEMIS_ENTITY_SYSTEM
-#define ARTEMIS_ENTITY_SYSTEM
+#ifndef ARTEMIS_ENTITY_SYSTEM_H
+#define ARTEMIS_ENTITY_SYSTEM_H
 
 #include <list>
 
-#include "system_manager.hpp"
+#include "entity.hpp"
+#include "world.hpp"
 
-#include "util/bag.hpp"
-#include "util/immutable_bag.hpp"
 #include "util/typedefs.hpp"
 
-class Entity;
-class World;
-
-class EntitySystem
+namespace Artemis
 {
-    friend class SystemManager;
-    public:
-        EntitySystem();
-        EntitySystem(std::list<ComponentId> compIds);
+    class SystemManager;
+    /**
+     * The most raw entity system. It should not typically be used, but you can 
+     * create your own entity system handling by extending this. It is recommended
+     * that you use the other provided entity system implementations.
+     * 
+     * @author Arni Arent
+     *
+     */
+    class EntitySystem
+    {
+        friend class SystemManager;
+        public:
+            EntitySystem();
+            EntitySystem(std::list<ComponentId> compIds, World& world);
 
-    protected:
-        World* world_;
+        protected:
+            World& world_;
 
-        void change(Entity* e);
-        virtual void process();
+            void change(EntityPtr e);
+            virtual void process();
 
-        SystemId get_id();
-        void set_id(SystemId id);
+            SystemId get_id();
+            void set_id(SystemId id);
 
-        virtual void begin();
-        virtual void end();
-        virtual bool checkProcessing();
-        virtual void processEntities(std::list<Entity*> entities);
-        virtual void initialize();
-        virtual void added(Entity* e);
-        virtual void removed(Entity* e);
+            /**
+             * Called before processing of entities begins
+             */
+            virtual void begin();
 
-    private:
-        SystemId system_id_;
-        ComponentBits comp_bits_;
-        std::list<Entity*> actives_;
+            /**
+             * Called after the processing of entities ends
+             */
+            virtual void end();
 
-        void remove(Entity* e);
-        void set_world(World* world);
+            /**
+             * @return true of the system should be processed, false if not.
+             */
+            virtual bool checkProcessing();
+
+            /**
+             * Any implementing entity system must implement this method and the
+             * logic to process the given entities of the system.
+             *
+             * @param entities the entities this system contains.
+             */
+            virtual void processEntities(std::list<EntityPtr> entities);
+            virtual void initialize();
+
+            /**
+             * Called if the system has received an entity it is interested in,
+             * e.g. created or a component was added to it.
+             * @param e the entity that was added to this system.
+             */
+            virtual void added(EntityPtr e);
+
+            /**
+             * Called if an entity was removed from this system, e.g. deleted or
+             * had one of it's components removed.
+             * @param e the entity that was removed from this system
+             */
+            virtual void removed(EntityPtr e);
+
+        private:
+            SystemId system_id_;
+            ComponentBits comp_bits_;
+            std::list<EntityPtr> actives_;
+
+            void remove(EntityPtr e);
+    };
 };
-
 #endif

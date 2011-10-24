@@ -3,9 +3,11 @@
 #include "entity.hpp"
 #include "entity_system.hpp"
 
-EntitySystem::EntitySystem(std::list<ComponentId> compIds)
+using namespace Artemis;
+EntitySystem::EntitySystem(std::list<ComponentId> compIds, World& world) :
+    world_(world)
 {
-    actives_ = std::list<Entity*>();
+    actives_ = std::list<EntityPtr>();
 
     BOOST_FOREACH( ComponentId id, compIds )
     {
@@ -33,7 +35,7 @@ void EntitySystem::process()
     }
 }
 
-void EntitySystem::change(Entity* e)
+void EntitySystem::change(EntityPtr e)
 {
     bool contains = (system_id_ & e->get_system_bits()) == system_id_;
     bool interest = (comp_bits_ & e->get_comp_bits()) == comp_bits_;
@@ -50,15 +52,9 @@ void EntitySystem::change(Entity* e)
     }
 }
 
-void EntitySystem::remove(Entity* e)
+void EntitySystem::remove(EntityPtr e)
 {
     actives_.remove(e);
     e->removeSystemId(system_id_);
     removed(e);
 }
-
-void EntitySystem::set_world(World* world)
-{
-    world_ = world;
-}
-

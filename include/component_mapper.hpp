@@ -2,20 +2,37 @@
 #define ARTEMIS_COMPONENTMAPPER_H
 
 #include "util/typedefs.hpp"
+#include "entity_manager.hpp"
+#include "world.hpp"
 
-class Entity;
-class EntityManager;
-class World;
 
-template <class T>
-class ComponentMapper
+namespace Artemis
 {
-    public:
-        ComponentMapper(ComponentId id, World* world); 
-        T* get(Entity* e);
-    private:
-        ComponentId id_;
-        EntityManager* em_;
-};
+    class Entity;
 
+    /**
+     * High performance component retrieval from entities. Use this whenever you
+     * need to retrieve components from entities often and fast.
+     *
+     * @param <T>
+     */
+
+    template <class T>
+    class ComponentMapper
+    {
+        public:
+            ComponentMapper(ComponentId id, WorldPtr world)
+            {
+                this->id_ = id;
+                this->em_ = world->get_entity_manager();
+            }
+            T* get(Entity* e)
+            {
+                return dynamic_cast<T>(em_->getComponent(e, id_));
+            }
+        private:
+            ComponentId id_;
+            EntityManager* em_;
+    };
+};
 #endif

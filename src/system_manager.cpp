@@ -4,43 +4,41 @@
 #include "entity_system.hpp"
 #include "world.hpp"
 
-SystemManager::SystemManager(World* world)
+using namespace Artemis;
+SystemManager::SystemManager(World& world) :
+    world_(world)
 {
-    world_ = world;
-    systems_ = std::map<EntityId, EntitySystem*>();
+    systems_ = std::map<EntityId, boost::shared_ptr<EntitySystem> >();
 }
 
-EntitySystem* SystemManager::addSystem(EntitySystem* system)
+SystemId SystemManager::addSystem(boost::shared_ptr<EntitySystem> system)
 {
-    system->set_world(world_);
-
     systems_[system->get_id()] = system;
     
-    return system;
+    return system->get_id();
 }
 
-template <class T>
-T* SystemManager::getSystem(SystemId id)
+boost::shared_ptr<EntitySystem> SystemManager::getSystem(SystemId id)
 {
-    std::map<SystemId, EntitySystem*>::iterator sysi = systems_.find(id);
+    std::map<SystemId, boost::shared_ptr<EntitySystem> >::iterator sysi = systems_.find(id);
     if( sysi != systems_.end() )
     {
-        return dynamic_cast<T*>(*sysi);
+        return sysi->second;
     }
     else
     {
-        return NULL;
+        return boost::shared_ptr<EntitySystem>();
     }
 }
 
-std::map<SystemId, EntitySystem*> SystemManager::getSystems()
+std::map<SystemId, boost::shared_ptr<EntitySystem> > SystemManager::getSystems()
 {
     return systems_; // makes a copy
 }
 
 void SystemManager::initializeAll()
 {
-    std::pair<EntityId, EntitySystem*> p;
+    std::pair<EntityId, boost::shared_ptr<EntitySystem> > p;
     BOOST_FOREACH(p, systems_)
     {
         p.second->initialize();
