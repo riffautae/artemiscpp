@@ -1,9 +1,9 @@
 
-#include "entity.hpp"
-#include "entity_manager.hpp"
-#include "group_manager.hpp"
-#include "tag_manager.hpp"
-#include "world.hpp"
+#include "artemis/entity.hpp"
+#include "artemis/entity_manager.hpp"
+#include "artemis/group_manager.hpp"
+#include "artemis/tag_manager.hpp"
+#include "artemis/world.hpp"
 
 #include <sstream>
 

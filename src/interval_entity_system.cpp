@@ -1,5 +1,5 @@
-#include "interval_entity_system.hpp"
-#include "world.hpp"
+#include "artemis/interval_entity_system.hpp"
+#include "artemis/world.hpp"
 
 using namespace Artemis;
 IntervalEntitySystem::IntervalEntitySystem(

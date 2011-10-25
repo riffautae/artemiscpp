@@ -1,7 +1,7 @@
 #include "boost/foreach.hpp"
 
-#include "entity.hpp"
-#include "entity_system.hpp"
+#include "artemis/entity.hpp"
+#include "artemis/entity_system.hpp"
 
 using namespace Artemis;
 EntitySystem::EntitySystem(std::list<ComponentId> compIds, World& world) :

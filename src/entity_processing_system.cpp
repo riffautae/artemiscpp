@@ -1,4 +1,4 @@
-#include "entity_processing_system.hpp"
+#include "artemis/entity_processing_system.hpp"
 
 #include "boost/foreach.hpp"
 

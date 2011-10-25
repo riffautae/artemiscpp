@@ -1,4 +1,4 @@
-#include "manager.hpp"
+#include "artemis/manager.hpp"
 
 using namespace Artemis;
 ManagerId Manager::get_id()

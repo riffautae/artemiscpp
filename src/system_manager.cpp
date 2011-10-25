@@ -1,8 +1,8 @@
 #include "boost/foreach.hpp"
 
-#include "system_manager.hpp"
-#include "entity_system.hpp"
-#include "world.hpp"
+#include "artemis/system_manager.hpp"
+#include "artemis/entity_system.hpp"
+#include "artemis/world.hpp"
 
 using namespace Artemis;
 SystemManager::SystemManager(World& world) :

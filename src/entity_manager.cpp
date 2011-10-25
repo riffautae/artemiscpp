@@ -1,8 +1,8 @@
-#include "component.hpp"
-#include "entity.hpp"
-#include "entity_manager.hpp"
-#include "world.hpp"
-#include "pointers/entity.hpp"
+#include "artemis/component.hpp"
+#include "artemis/entity.hpp"
+#include "artemis/entity_manager.hpp"
+#include "artemis/world.hpp"
+#include "artemis/pointers/entity.hpp"
 
 using namespace Artemis;
 EntityManager::EntityManager(World& world):

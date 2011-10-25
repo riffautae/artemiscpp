@@ -1,7 +1,7 @@
 #include "boost/foreach.hpp"
 
-#include "interval_entity_processing_system.hpp"
-#include "entity.hpp"
+#include "artemis/interval_entity_processing_system.hpp"
+#include "artemis/entity.hpp"
 
 using namespace Artemis;
 IntervalEntityProcessingSystem::IntervalEntityProcessingSystem(

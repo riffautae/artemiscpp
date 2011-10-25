@@ -1,6 +1,6 @@
 #include "boost/foreach.hpp"
 
-#include "delayed_entity_processing_system.hpp"
+#include "artemis/delayed_entity_processing_system.hpp"
 
 using namespace Artemis;
 DelayedEntityProcessingSystem::DelayedEntityProcessingSystem(std::list<ComponentId> comp_ids, World& world) 

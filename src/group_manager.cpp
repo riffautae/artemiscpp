@@ -1,6 +1,6 @@
 #include "boost/foreach.hpp"
 
-#include "group_manager.hpp"
+#include "artemis/group_manager.hpp"
 
 using namespace Artemis;
 GroupManager::GroupManager()

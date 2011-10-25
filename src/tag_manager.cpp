@@ -1,5 +1,5 @@
-#include "entity.hpp"
-#include "tag_manager.hpp"
+#include "artemis/entity.hpp"
+#include "artemis/tag_manager.hpp"
 
 using namespace Artemis;
 TagManager::TagManager()

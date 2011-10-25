@@ -1,5 +1,5 @@
-#include "delayed_entity_system.hpp"
-#include "world.hpp"
+#include "artemis/delayed_entity_system.hpp"
+#include "artemis/world.hpp"
 
 using namespace Artemis;
 DelayedEntitySystem::DelayedEntitySystem(std::list<ComponentId> comp_ids, World& world)

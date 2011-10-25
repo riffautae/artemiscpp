@@ -1,15 +1,15 @@
 #include "boost/foreach.hpp"
 #include "boost/shared_ptr.hpp"
 
-#include "entity.hpp"
-#include "entity_manager.hpp"
-#include "group_manager.hpp"
-#include "manager.hpp"
-#include "system_manager.hpp"
-#include "tag_manager.hpp"
-#include "world.hpp"
+#include "artemis/entity.hpp"
+#include "artemis/entity_manager.hpp"
+#include "artemis/group_manager.hpp"
+#include "artemis/manager.hpp"
+#include "artemis/system_manager.hpp"
+#include "artemis/tag_manager.hpp"
+#include "artemis/world.hpp"
 
-#include "pointers/entity.hpp"
+#include "artemis/pointers/entity.hpp"
 
 using namespace Artemis;
 #define NEWMANAGERTHIS(man) boost::shared_ptr<man>(new man(*this));
