@@ -1,3 +1,5 @@
+#include "boost/foreach.hpp"
+
 #include "artemis/component.hpp"
 #include "artemis/entity.hpp"
 #include "artemis/entity_manager.hpp"
@@ -46,7 +48,7 @@ long EntityManager::get_total_removed()
 EntityPtr EntityManager::create()
 {
     EntityPtr e;
-    if( !removed_and_available_.empty() )
+    if( removed_and_available_.empty() )
     {
         e = EntityPtr(new Entity(world_, next_available_id_++));
     }
@@ -58,6 +60,7 @@ EntityPtr EntityManager::create()
     }
     e->set_unique_id(unique_entity_id_++);
     active_entities_[e->get_id()] = e;
+    components_by_ent_[e->get_id()] = MapCompInner();
     count_++;
     total_created_++;
     return e;
@@ -94,6 +97,21 @@ void EntityManager::remove(EntityPtr e)
     removed_and_available_.push_back(e);
 }
 
+void EntityManager::refresh(EntityPtr e)
+{
+    SystemManager& sm = world_.get_system_manager();
+    std::map<SystemId, boost::shared_ptr<EntitySystem> > systems =
+        sm.getSystems();
+
+    typedef std::map<SystemId, boost::shared_ptr<EntitySystem> >::value_type 
+        ESVT;
+    BOOST_FOREACH(ESVT esvt, systems)
+    {
+        boost::shared_ptr<EntitySystem> es = esvt.second;
+        es->change(e);
+    }
+}
+
 void EntityManager::addComponent(EntityPtr e, ComponentPtr component)
 {
     MapComp::iterator enti = components_by_ent_.find(e->get_id());
@@ -102,7 +120,7 @@ void EntityManager::addComponent(EntityPtr e, ComponentPtr component)
     if( enti != components_by_ent_.end() )
     {
         MapCompInner& components = enti->second;
-        ComponentId comp_id = component->componentId;
+        ComponentId comp_id = component->getComponentId();
         MapCompInner::iterator inn = components.find(comp_id);
         // component is not already in the entity
         if( inn == components.end() )

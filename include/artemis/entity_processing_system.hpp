@@ -26,7 +26,7 @@ namespace Artemis
              * Process an entity this system is interested in
              * @param e the entity to process
              */
-            virtual void process(EntityPtr e);
+            virtual void process(EntityPtr e)=0;
             void processEntities(std::list<EntityPtr> entities);
 
         protected:

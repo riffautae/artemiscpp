@@ -78,7 +78,6 @@ namespace Artemis
             SystemBits system_bits_;
 
             World& world_;
-            boost::shared_ptr<EntityManager> entity_manager_;
     };
 };
 #endif

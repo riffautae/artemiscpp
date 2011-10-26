@@ -25,6 +25,20 @@ bool TagManager::isSet(TagId tag)
     return entity_by_tag_.find(tag) != entity_by_tag_.end();
 }
 
+EntityPtr TagManager::getEntity(TagId tag)
+{
+    std::map<TagId, EntityPtr>::iterator tagi =
+        entity_by_tag_.find(tag);
+    if( tagi != entity_by_tag_.end() )
+    {
+        return tagi->second;
+    }
+    else
+    {
+        return EntityPtr(); // null ptr
+    }
+}
+
 void TagManager::remove(EntityPtr e)
 {
     std::map<EntityId, TagId>::iterator enti =
@@ -33,6 +47,6 @@ void TagManager::remove(EntityPtr e)
     if( enti != tag_by_entity_.end() )
     {
         tag_by_entity_.erase(e->get_id());
-        entity_by_tag_.erase((*enti).second);
+        entity_by_tag_.erase(enti->second);
     }
 }

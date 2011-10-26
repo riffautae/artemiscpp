@@ -10,7 +10,8 @@ namespace Artemis
 {
     class Component {
         public:
-            static ComponentId componentId;
+            Component();
+            virtual ComponentId getComponentId();
     };
 };
 

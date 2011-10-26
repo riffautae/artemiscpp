@@ -35,6 +35,11 @@ void EntitySystem::process()
     }
 }
 
+long EntitySystem::numEntities()
+{
+    return actives_.size();
+}
+
 void EntitySystem::change(EntityPtr e)
 {
     bool contains = (system_id_ & e->get_system_bits()) == system_id_;
@@ -57,4 +62,29 @@ void EntitySystem::remove(EntityPtr e)
     actives_.remove(e);
     e->removeSystemId(system_id_);
     removed(e);
+}
+
+bool EntitySystem::checkProcessing()
+{
+    return false;
+}
+
+void EntitySystem::begin()
+{
+}
+
+void EntitySystem::end()
+{
+}
+
+void EntitySystem::initialize()
+{
+}
+
+void EntitySystem::added(EntityPtr e)
+{
+}
+
+void EntitySystem::removed(EntityPtr e)
+{
 }

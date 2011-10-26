@@ -1,4 +1,5 @@
 set(SRCS
+    component.cpp
     delayed_entity_processing_system.cpp 
     delayed_entity_system.cpp
     entity.cpp

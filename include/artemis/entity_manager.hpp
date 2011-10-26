@@ -8,7 +8,6 @@
 #include "artemis/pointers/component.hpp"
 
 #include "artemis/entity.hpp"
-#include "artemis/world.hpp"
 #include "artemis/util/typedefs.hpp"
 
 namespace Artemis

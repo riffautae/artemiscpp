@@ -12,13 +12,7 @@ using namespace Artemis;
 Entity::Entity(World& world, EntityId id)
     : world_(world)
 {
-    this->entity_manager_ = world_.get_entity_manager();
     this->id_ = id;
-}
-
-bool Entity::is_active()
-{
-    return entity_manager_->isActive(id_);
 }
 
 EntityId Entity::get_id()

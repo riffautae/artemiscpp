@@ -8,16 +8,17 @@
 #include "artemis/pointers/entity.hpp"
 #include "artemis/pointers/manager.hpp"
 
+#include "artemis/entity_manager.hpp"
+#include "artemis/group_manager.hpp"
+#include "artemis/system_manager.hpp"
+#include "artemis/tag_manager.hpp"
+
 #include "artemis/util/typedefs.hpp"
 
 namespace Artemis
 {
     class Entity;
-    class EntityManager;
-    class GroupManager;
     class Manager;
-    class SystemManager;
-    class TagManager;
     class World;
 
     /**
@@ -31,10 +32,10 @@ namespace Artemis
     class World
     {
         private:
-            boost::shared_ptr<EntityManager> entity_manager_;
-            boost::shared_ptr<GroupManager> group_manager_;
-            boost::shared_ptr<SystemManager> system_manager_;
-            boost::shared_ptr<TagManager> tag_manager_;
+            EntityManager entity_manager_;
+            GroupManager group_manager_;
+            SystemManager system_manager_;
+            TagManager tag_manager_;
 
             long delta_;
             std::set<EntityPtr> refreshed_;
@@ -46,10 +47,10 @@ namespace Artemis
         public:
             World();
             ~World();
-            boost::shared_ptr<EntityManager> get_entity_manager();
-            boost::shared_ptr<GroupManager> get_group_manager();
-            boost::shared_ptr<SystemManager> get_system_manager();
-            boost::shared_ptr<TagManager> get_tag_manager();
+            EntityManager& get_entity_manager();
+            GroupManager& get_group_manager();
+            SystemManager& get_system_manager();
+            TagManager& get_tag_manager();
 
             /**
              * Allows for setting a custom manager.

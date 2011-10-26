@@ -4,13 +4,14 @@
 #include <list>
 
 #include "artemis/entity.hpp"
-#include "artemis/world.hpp"
 
 #include "artemis/util/typedefs.hpp"
 
 namespace Artemis
 {
+    class EntityManager;
     class SystemManager;
+    class World;
     /**
      * The most raw entity system. It should not typically be used, but you can 
      * create your own entity system handling by extending this. It is recommended
@@ -22,15 +23,17 @@ namespace Artemis
     class EntitySystem
     {
         friend class SystemManager;
+        friend class EntityManager;
         public:
-            EntitySystem();
             EntitySystem(std::list<ComponentId> compIds, World& world);
 
+            void process();
+
+            long numEntities();
         protected:
             World& world_;
 
             void change(EntityPtr e);
-            virtual void process();
 
             SystemId get_id();
             void set_id(SystemId id);
@@ -56,7 +59,7 @@ namespace Artemis
              *
              * @param entities the entities this system contains.
              */
-            virtual void processEntities(std::list<EntityPtr> entities);
+            virtual void processEntities(std::list<EntityPtr> entities)=0;
             virtual void initialize();
 
             /**
